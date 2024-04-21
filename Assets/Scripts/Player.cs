@@ -7,81 +7,55 @@ public class Player : MonoBehaviour
     [System.Serializable]
     public class Stats
     {
-        public float Speed = 5f;
-        public float AttackTime = 0.3f;
-        public float AttackStun = 0.4f;
-        public float AttackSpeedModifier = 3f;
+        public float moveSpeed = 5f;
+
+        public float dashSpeed = 10f; // The speed of the dash
+        public float dashDistance = 5f;// The length of the dash
         public float dashCooldown = 3f;
+
+        public float AttackStun = 0.3f;
     }
 
     public Stats stats = new Stats();
 
+    private Vector2 movement;
+
     public bool inCooldown = false;
-    public float cooldownTimer = 0f;
+    public bool inAttack = false;
 
     public bool inDefence = false;
     public float endDefence = 0f;
 
-    public bool inAttack = false;
-    private bool deadly = false;
-    private float endAttack = 0f;
+    private float dashTimeTaken = 0f;
     private float endStun = 0f;
-    private Vector3 targetPos;
-
-    private Vector2 movement;
-    public bool moveWithMouse = true;
-    public float moveSpeed = 5f;
-
+    public float cooldownTimer = 0f;
+    private float endAttack = 0f;
 
     private Rigidbody2D rb;
-    //private Animator anim;
-    //private TrailRenderer trail;
+
+    private CircleCollider2D parryCollider;
+
+    private Vector3 targetPosition;
 
     private GameMaster gm;
 
-    private SpriteRenderer spriteRenderer;
 
 
-    // [SerializeField] private GameObject pivot;
-
-    public void ChangeMoveStyle()
-    {
-        if (moveWithMouse)
-        {
-            moveWithMouse = false;
-        }
-        else
-        {
-            moveWithMouse = true;
-        }
-    }
-
-
-    // Use this for initialization
     private void Start()
     {
         gm = GameMaster.Instance;
-        rb = gameObject.GetComponent<Rigidbody2D>();
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        //anim = gameObject.GetComponent<Animator>();
-        //trail = gameObject.GetComponent<TrailRenderer>();
-
-        // Calculate mouse position
-        targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        targetPos.z = transform.position.z;
+        rb = GetComponent<Rigidbody2D>();
+        parryCollider = GetComponent<CircleCollider2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //newstuff
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
 
         if (inAttack && Time.time >= endStun)
         {
             inAttack = false;
-            deadly = false;
         }
 
         if (inDefence && Time.time >= endDefence)
@@ -90,26 +64,46 @@ public class Player : MonoBehaviour
             //Debug.Log("cooldown = " + cooldownTimer);
         }
 
-        if (Input.GetMouseButtonDown(0) && Time.time >= endStun && !inCooldown)
+        // Check for left mouse button click and enter attack mode
+        if (Input.GetMouseButtonDown(0) && !inCooldown && Time.time >= endStun)
         {
-
             inAttack = true;
-            endAttack = Time.time + stats.AttackTime;
-            endStun = endAttack + stats.AttackStun;
-
             inCooldown = true;
             cooldownTimer = 0;
+
+            float estimatedAttackDuration = stats.dashDistance / stats.dashSpeed;
+
+            endAttack = Time.time + estimatedAttackDuration;
+            endStun = endAttack + stats.AttackStun;
+
+            //Debug.Log("estimated attack duration = " + estimatedAttackDuration);
+
+            // Get the mouse position in world coordinates
+            targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            targetPosition.z = transform.position.z; // Ensure the same z-coordinate as the object
+
+            // Calculate direction towards the mouse
+            Vector3 direction = (targetPosition - transform.position).normalized;
+
+            // Move the object by dashDistance in that direction
+            Vector3 dashDestination = transform.position + direction * stats.dashDistance;
+
+            // Start dashing towards the calculated destination
+            StartCoroutine(DashTowards(dashDestination));
         }
 
+        //check for right click and enter parry mode
         if (Input.GetMouseButtonDown(1) && Time.time >= endStun && !inCooldown)
         {
-            //Debug.Log("mouse is working");
+
             inDefence = true;
             endDefence = Time.time + stats.dashCooldown;
             //endStun = endDefence + stats.AttackStun;
 
             inCooldown = true;
             cooldownTimer = 0;
+
+            StartCoroutine(Parry());
 
         }
 
@@ -124,149 +118,49 @@ public class Player : MonoBehaviour
                 inCooldown = false;
             }
         }
-        //where the character looks
-        Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouse.z = 0;
+    }
 
+    private void FixedUpdate()
+    {
         if (!inAttack)
         {
-            if (mouse.x < transform.position.x)
-            {
-                transform.eulerAngles = new Vector3(0, 180, 0);
-            }
-            else if (mouse.x > transform.position.x)
-            {
-                transform.eulerAngles = new Vector3(0, 0, 0);
-            }
-
-            if (mouse.y > transform.position.y)
-            {
-                //spriteRenderer.sprite = behindSprite;
-            }
-            else if (mouse.y < transform.position.y)
-            {
-                // spriteRenderer.sprite = frontSprite;
-            }
+            rb.MovePosition(rb.position + movement.normalized * stats.moveSpeed * Time.fixedDeltaTime);
         }
-
-        // Debug.Log(rb.velocity.ToString());
-
-
     }
 
-    void FixedUpdate()
+    IEnumerator DashTowards(Vector3 destination)
     {
-        if (rb.drag == 50)
-            rb.drag = 20;
+        Vector3 initialPosition = transform.position;
+        float startTime = Time.time;
 
-        if (inDefence)
+        while (Vector3.Distance(transform.position, destination) > 0.1f)
         {
-            rb.velocity = Vector2.zero;
+            // Move towards the destination at dashSpeed
+            transform.position = Vector3.MoveTowards(transform.position, destination, stats.dashSpeed * Time.deltaTime);
+            yield return null;
         }
 
-        if (!inAttack && !inDefence)
-        {
-            if (moveWithMouse)
-            {
+        float dashDistanceTraveled = Vector3.Distance(initialPosition, transform.position);
+        float dashTimeTaken = Time.time - startTime;
 
-
-                //deactivate the trail effect
-                //trail.enabled = false;
-
-                // Calculate mouse position
-                targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                targetPos.z = transform.position.z;
-
-                if (Vector3.Distance(targetPos, transform.position) > 0.2)
-                {
-                    var direction = targetPos - transform.position;
-                    rb.AddRelativeForce(direction.normalized * stats.Speed, ForceMode2D.Force);
-                    Debug.DrawLine(targetPos, transform.position, Color.green);
-
-                   
-
-
-                    
-
-                }
-                else
-                {
-                    rb.drag = 50;
-
-
-                }
-
-            }
-            else
-            {
-                rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
-            }
-        }
-        else if (inAttack)
-        {
-            if (Time.time <= endAttack)
-            {
-                targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                targetPos.z = transform.position.z;
-
-                targetPos.x += targetPos.x - transform.position.x;
-                targetPos.y += targetPos.y - transform.position.y;
-                var direction = targetPos - transform.position;
-                rb.AddRelativeForce(direction.normalized * (stats.Speed * stats.AttackSpeedModifier), ForceMode2D.Force);
-                Debug.DrawLine(targetPos, transform.position, Color.red);
-
-
-            }
-
-        }
+        Debug.Log("Dash Distance Traveled: " + dashDistanceTraveled);
+        Debug.Log("Dash Time Taken: " + dashTimeTaken);
     }
 
-
-
-    void OnTriggerEnter2D(Collider2D col)
+    IEnumerator Parry()
     {
-        if (col.gameObject.tag == "mainEnemy")
-        {   // We collided with a main enemy.
-            //SwordEnemy swordEnemy = col.gameObject.GetComponent<SwordEnemy>();
+        Debug.Log("parry");
+        parryCollider.enabled = true;
 
-            Debug.Log("hitted sword enemy");
 
-            if (inAttack)
-            {   // We are currently dashing, kill enemy.
-                gm.KillmainEnemy(col.gameObject);
-                ScreenShakeController.instance.StartShake(.1f, .1f);
-                inCooldown = false;
-            }
-            /*  else if (swordEnemy.deadly)
-              {   // The enemy is dashing and we are vulnerable, die.
-                  gm.KillPlayer(this);
-              } */
-        }
-        else if (col.gameObject.tag == "rangedEnemy")
-        {   // We collided with a ranged enemy.
-            //RangedEnemy rangedEnemy = col.gameObject.GetComponent<RangedEnemy>();
+        yield return new WaitForSeconds(1);
 
-            Debug.Log("hitted ranged enemy");
+        parryCollider.enabled = false;
+        inDefence = false;
 
-            if (inAttack)
-            {   // We are currently dashing, kill enemy.
-                gm.KillEnemy(col.gameObject);
-                ScreenShakeController.instance.StartShake(.1f, .1f);
-                inCooldown = false;
-            }
-        }
-        else if (col.gameObject.tag == "Arrow")
-        {   // We collided with an arrow.
-            Debug.Log("hitted arrow");
-
-            if (inAttack)
-            {   // We are currently dashing, kill enemy.
-                gm.BreakArrow(col.gameObject);
-                ScreenShakeController.instance.StartShake(.1f, .1f);
-                inCooldown = false;
-            }
-        }
+        Debug.Log("stop parry");
     }
+
 }
 
 
