@@ -161,6 +161,14 @@ public class Player : MonoBehaviour
         Debug.Log("stop parry");
     }
 
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (inAttack)
+        {   // We are currently dashing, kill enemy.
+            gm.KillEnemy(col.gameObject);
+            inCooldown = false;
+        }
+    }
 }
 
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class BasicEnemyFollowPlayer : State
 
     public override void Enter()
     {
-        //Debug.Log("state 1");
+        
     }
 
     public override void CalledInFixedUpdate()
@@ -22,7 +23,6 @@ public class BasicEnemyFollowPlayer : State
         // Calculate the direction and distance to the target
         Vector2 direction = enemy.target.transform.position - enemy.transform.position;
         float distance = direction.magnitude;
-
 
         //if we are far away from target, we go to target, if we reach target we change state
         if (distance > enemy.followDistance)
@@ -41,9 +41,15 @@ public class BasicEnemyChargeBeforeDash : State
 {
     public BasicEnemy enemy;
     private float currentTime = 0f;
+
     public BasicEnemyChargeBeforeDash(BasicEnemy myEnemy)
     {
         enemy = myEnemy;
+    }
+
+    public override void Enter()
+    {
+        
     }
 
     public override void CalledInFixedUpdate()
@@ -51,7 +57,6 @@ public class BasicEnemyChargeBeforeDash : State
         currentTime += Time.fixedDeltaTime;
         if (currentTime > enemy.chargeDuration)
         {
-
             parentFSM.SetCurrentState(new BasicEnemyDashToPlayer(enemy));
         }
     }
@@ -61,9 +66,7 @@ public class BasicEnemyChargeBeforeDash : State
 public class BasicEnemyDashToPlayer : State
 {
     public BasicEnemy enemy;
-
-    private bool setAttackPos = false;
-    private Vector2 dashDirection;
+    private Vector3 dashDestination;
 
     public BasicEnemyDashToPlayer(BasicEnemy myEnemy)
     {
@@ -72,39 +75,87 @@ public class BasicEnemyDashToPlayer : State
 
     public override void Enter()
     {
-        enemy.dashTimeLeft = enemy.dashDuration;
         enemy.isDashing = true;
-    }
 
+        // Calculate direction towards the player
+        Vector3 direction = (enemy.target.transform.position - enemy.transform.position).normalized;
+
+        // find the dash destination
+        dashDestination = enemy.transform.position + direction * enemy.dashDistance;
+    }
 
     public override void CalledInFixedUpdate()
     {
-
-        if (!setAttackPos)
+        if (Vector3.Distance(enemy.transform.position, dashDestination) > 0.1f)
         {
-            setAttackPos = true;
-            dashDirection = enemy.target.transform.position - enemy.transform.position;
-            dashDirection = dashDirection.normalized;
+            // Move towards the destination at dashSpeed
+            enemy.transform.position = Vector3.MoveTowards(enemy.transform.position, dashDestination, enemy.dashSpeed * Time.fixedDeltaTime);
         }
-        if (enemy.isDashing)
+        else
         {
-            // Move the player object in the dash direction at the dash speed
-            enemy.rb.MovePosition(enemy.rb.position + dashDirection.normalized * enemy.dashSpeed * Time.fixedDeltaTime);
-            enemy.dashTimeLeft -= Time.fixedDeltaTime;
-
-            // Stop dashing after the dash duration has elapsed
-            if (enemy.dashTimeLeft <= 0)
-            {
-                enemy.isDashing = false;
-                parentFSM.SetCurrentState(new BasicEnemyFollowPlayer(enemy));
-            }
+            parentFSM.SetCurrentState(new BasicEnemyCooldown(enemy));
         }
     }
-
-
-
 }
 
+//fourth state, enemy is in cooldown, not moving
+public class BasicEnemyCooldown : State
+{
+    public BasicEnemy enemy;
+    private float currentTime = 0f;
+    public BasicEnemyCooldown(BasicEnemy myEnemy)
+    {
+        enemy = myEnemy;
+    }
+
+    public override void Enter()
+    {
+        enemy.isDashing = false;
+    }
+
+    public override void CalledInFixedUpdate()
+    {
+        currentTime += Time.fixedDeltaTime;
+        if (currentTime > enemy.cooldownDuration)
+        {
+            parentFSM.SetCurrentState(new BasicEnemyFollowPlayer(enemy));
+        }
+    }
+}
+
+//fifth state, enemy is bouncing away of the player after a successful parry
+public class BasicEnemyParryBounce : State
+{
+    public BasicEnemy enemy;
+    private Vector3 bounceDestination;
+
+    public BasicEnemyParryBounce(BasicEnemy myEnemy)
+    {
+        enemy = myEnemy;
+    }
+
+    public override void Enter()
+    {
+        // Calculate direction towards the player
+        Vector3 direction = (enemy.target.transform.position - enemy.transform.position).normalized;
+
+        // find the bounce destination
+        bounceDestination = enemy.transform.position - direction * enemy.bounceDistance;
+    }
+
+    public override void CalledInFixedUpdate()
+    {
+        if (Vector3.Distance(enemy.transform.position, bounceDestination) > 0.1f)
+        {
+            // Move towards the destination at dashSpeed
+            enemy.transform.position = Vector3.MoveTowards(enemy.transform.position, bounceDestination, enemy.bounceSpeed * Time.fixedDeltaTime);
+        }
+        else
+        {
+            parentFSM.SetCurrentState(new BasicEnemyCooldown(enemy));
+        }
+    }
+}
 
 
 public class BasicEnemy : Enemy
@@ -112,23 +163,26 @@ public class BasicEnemy : Enemy
     private FSM fsm;
 
     public float speed = 10f;
-    public float attackSpeedModifier = 3f;
+    //how close the enemy will go to the player
+    public float followDistance = 3f;
+
     public float chargeDuration = 2f;
+    
+    public float dashSpeed = 10f;
+    public float dashDistance = 5f;
+   
+    public float cooldownDuration = 2f;
+
+    public float bounceDistance = 4f;
+    public float bounceSpeed = 7f;
+
+    public bool isDashing = false;
 
     public GameObject target;
     public Rigidbody2D rb;
 
-    public float dashSpeed = 10f;
-    public float dashDuration = 0.2f;
-    public float dashTimeLeft;
-    public bool isDashing = false;
-
-    //how close the enemy will go to the player
-    public float followDistance = 3f;
-
     public void Awake()
     {
-
         target = GameObject.FindWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
     }
@@ -149,7 +203,17 @@ public class BasicEnemy : Enemy
         {
             if (col.gameObject.tag == "Player")
             {
-                GameMaster.Instance.KillPlayer(col.gameObject);
+                Player playerScript = target.GetComponent<Player>();
+
+                if (playerScript.inDefence)
+                {
+                    playerScript.inCooldown = false;
+                    fsm = new FSM(new BasicEnemyParryBounce(this));
+                }
+                else
+                {
+                    GameMaster.Instance.KillPlayer(col.gameObject);
+                }
             }
         }
     }
