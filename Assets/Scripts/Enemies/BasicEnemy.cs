@@ -189,6 +189,7 @@ public class BasicEnemy : Enemy
 
     private void OnEnable()
     {
+        Debug.Log("hello i am out");
         fsm = new FSM(new BasicEnemyFollowPlayer(this));
     }
 

@@ -104,7 +104,6 @@ public class Player : MonoBehaviour
             cooldownTimer = 0;
 
             StartCoroutine(Parry());
-
         }
 
         if (inCooldown)
@@ -142,23 +141,16 @@ public class Player : MonoBehaviour
 
         float dashDistanceTraveled = Vector3.Distance(initialPosition, transform.position);
         float dashTimeTaken = Time.time - startTime;
-
-        Debug.Log("Dash Distance Traveled: " + dashDistanceTraveled);
-        Debug.Log("Dash Time Taken: " + dashTimeTaken);
     }
 
     IEnumerator Parry()
     {
-        Debug.Log("parry");
         parryCollider.enabled = true;
-
 
         yield return new WaitForSeconds(1);
 
         parryCollider.enabled = false;
         inDefence = false;
-
-        Debug.Log("stop parry");
     }
 
     void OnTriggerEnter2D(Collider2D col)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameMaster : MonoBehaviour
 {
@@ -70,6 +71,7 @@ public class GameMaster : MonoBehaviour
         if (!playerScript.inAttack && !playerScript.inDefence)
         {
             player.SetActive(false);
+            SceneManager.LoadScene("EndMenu");
         }
 
     }

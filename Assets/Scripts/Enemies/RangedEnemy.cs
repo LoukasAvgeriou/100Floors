@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//first state, we are following the player if we are far from him
 public class RangedEnemyFollowPlayer : State
 {
     public RangedEnemy enemy;
@@ -35,6 +36,7 @@ public class RangedEnemyFollowPlayer : State
     }
 }
 
+//second state, we charge the shot
 public class RangedEnemyChargeBeforeShoot : State
 {
     public RangedEnemy enemy;
@@ -56,6 +58,7 @@ public class RangedEnemyChargeBeforeShoot : State
     }
 }
 
+//third state, we shoot
 public class RangedEnemyShoot : State
 {
     public RangedEnemy enemy;
@@ -88,12 +91,39 @@ public class RangedEnemyShoot : State
     }
 }
 
+//fourth state, enemy is in cooldown, not moving
+public class RangedEnemyCooldown : State
+{
+    public RangedEnemy enemy;
+    private float currentTime = 0f;
+    public RangedEnemyCooldown(RangedEnemy myEnemy)
+    {
+        enemy = myEnemy;
+    }
+
+    public override void Enter()
+    {
+        //Debug.Log("state 4");
+        //enemy.spriteRenderer.sprite = enemy.number4;
+    }
+
+    public override void CalledInFixedUpdate()
+    {
+        currentTime += Time.fixedDeltaTime;
+        if (currentTime > enemy.cooldownDuration)
+        {
+            parentFSM.SetCurrentState(new RangedEnemyFollowPlayer(enemy));
+        }
+    }
+}
+
 public class RangedEnemy : Enemy
 {
     private FSM fsm; //finite state machine
 
     public float speed = 10f;
     public float chargeDuration = 2f;
+    public float cooldownDuration = 2f;
 
     public GameObject target;
     public Rigidbody2D rb;
@@ -101,10 +131,13 @@ public class RangedEnemy : Enemy
     //how close the enemy will go to the player
     public float followDistance = 3f;
 
-    public void Awake()
+    private void OnEnable()
     {
         fsm = new FSM(new RangedEnemyFollowPlayer(this));
+    }
 
+    public void Awake()
+    {
         target = GameObject.FindWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
     }

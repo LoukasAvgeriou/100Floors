@@ -33,7 +33,17 @@ public class Bullet : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            GameMaster.Instance.KillPlayer(col.gameObject);
+            Player playerScript = player.GetComponent<Player>();
+
+            if (playerScript.inDefence)
+            {
+                gameObject.SetActive(false);
+                playerScript.inCooldown = false;
+            }
+            else
+            {
+                GameMaster.Instance.KillPlayer(col.gameObject);
+            }
         }
     }
 }

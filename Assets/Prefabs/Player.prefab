@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4759618492176250382}
   - component: {fileID: 5914512881710119796}
   - component: {fileID: 833214203323144029}
+  - component: {fileID: 6464322192553106798}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -100,18 +101,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
-    Speed: 90
-    AttackTime: 0.2
-    AttackStun: 0.4
-    AttackSpeedModifier: 6
-    dashCooldown: 2
+    moveSpeed: 5
+    dashSpeed: 30
+    dashDistance: 5
+    dashCooldown: 3
+    AttackStun: 0.2
   inCooldown: 0
-  cooldownTimer: 0
+  inAttack: 0
   inDefence: 0
   endDefence: 0
-  inAttack: 0
-  moveWithMouse: 1
-  moveSpeed: 5
+  cooldownTimer: 0
 --- !u!50 &5914512881710119796
 Rigidbody2D:
   serializedVersion: 4
@@ -125,8 +124,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 20
-  m_AngularDrag: 80
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -135,7 +134,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
@@ -184,3 +183,38 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!58 &6464322192553106798
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5887514878918255819}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 1
