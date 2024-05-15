@@ -15,7 +15,7 @@ public class BasicEnemyFollowPlayer : State
 
     public override void Enter()
     {
-        
+        enemy.spriteRenderer.color = Color.white;
     }
 
     public override void CalledInFixedUpdate()
@@ -49,7 +49,7 @@ public class BasicEnemyChargeBeforeDash : State
 
     public override void Enter()
     {
-        
+        enemy.spriteRenderer.color = Color.red;
     }
 
     public override void CalledInFixedUpdate()
@@ -75,6 +75,8 @@ public class BasicEnemyDashToPlayer : State
 
     public override void Enter()
     {
+        enemy.spriteRenderer.color = Color.white;
+
         enemy.isDashing = true;
 
         // Calculate direction towards the player
@@ -180,17 +182,23 @@ public class BasicEnemy : Enemy
 
     public GameObject target;
     public Rigidbody2D rb;
+    public SpriteRenderer spriteRenderer;
 
     public void Awake()
     {
         target = GameObject.FindWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable()
     {
-        Debug.Log("hello i am out");
         fsm = new FSM(new BasicEnemyFollowPlayer(this));
+    }
+
+    private void Update()
+    {
+        
     }
 
     public void FixedUpdate()

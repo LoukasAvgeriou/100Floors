@@ -31,8 +31,15 @@ public class Player : MonoBehaviour
     public float cooldownTimer = 0f;
     private float endAttack = 0f;
 
-    private Rigidbody2D rb;
+    //animation state
+    private string currentState;
 
+    //Animation states
+    const string PLAYER_IDLE = "player_idle";
+    const string PLAYER_RUN = "player_run";
+
+    private Rigidbody2D rb;
+    private Animator anim;
     private CircleCollider2D parryCollider;
 
     private Vector3 targetPosition;
@@ -45,7 +52,10 @@ public class Player : MonoBehaviour
     {
         gm = GameMaster.Instance;
         rb = GetComponent<Rigidbody2D>();
+        anim = gameObject.GetComponent<Animator>();
         parryCollider = GetComponent<CircleCollider2D>();
+
+        currentState = PLAYER_IDLE;
     }
 
     void Update()
@@ -106,6 +116,7 @@ public class Player : MonoBehaviour
             StartCoroutine(Parry());
         }
 
+        //we count the cooldown 
         if (inCooldown)
         {
             cooldownTimer += Time.deltaTime;
@@ -117,6 +128,34 @@ public class Player : MonoBehaviour
                 inCooldown = false;
             }
         }
+
+        //where the character looks
+        if (!inAttack && !inDefence)
+        {
+            if (movement.x < 0) // Moving left
+            {
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+            else if (movement.x > 0) // Moving right
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+        }
+
+        //animation control
+        // Check if both inputs are zero
+        if (movement.x == 0 && movement.y == 0)
+        {
+            //we need the idle animation
+            ChangeAnimationState(PLAYER_IDLE);
+        } 
+        else
+        {
+            //we need the run animation
+            ChangeAnimationState(PLAYER_RUN);
+        }
+
+
     }
 
     private void FixedUpdate()
@@ -124,6 +163,7 @@ public class Player : MonoBehaviour
         if (!inAttack)
         {
             rb.MovePosition(rb.position + movement.normalized * stats.moveSpeed * Time.fixedDeltaTime);
+            
         }
     }
 
@@ -160,6 +200,18 @@ public class Player : MonoBehaviour
             gm.KillEnemy(col.gameObject);
             inCooldown = false;
         }
+    }
+
+    private void ChangeAnimationState(string newState)
+    {
+        //stop the same animation from interrupting itself
+        if (currentState == newState) return;
+
+        //play the animation
+        anim.Play(newState);
+
+        //reassign the current state
+        currentState = newState;
     }
 }
 
