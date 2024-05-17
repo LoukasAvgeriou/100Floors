@@ -158,9 +158,9 @@ MonoBehaviour:
   - {fileID: 167505678}
   - {fileID: 2080053967}
   currentEnemies: 0
-  maxEnemiesToField: 1
-  minEnemyRespawnTimer: 1
-  maxEnemyRespawnTimer: 2
+  maxEnemiesToField: 0
+  minEnemyRespawnTimer: 0
+  maxEnemyRespawnTimer: 0
   mouseMovement: 0
 --- !u!4 &61695408
 Transform:
@@ -1092,7 +1092,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8736946415694772579, guid: 5a2e7c2ccd5dba74cae8ce032fe293b1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.229
       objectReference: {fileID: 0}
     - target: {fileID: 8736946415694772579, guid: 5a2e7c2ccd5dba74cae8ce032fe293b1, type: 3}
       propertyPath: m_LocalPosition.z

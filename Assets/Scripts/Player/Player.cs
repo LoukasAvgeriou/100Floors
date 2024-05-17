@@ -19,6 +19,9 @@ public class Player : MonoBehaviour
     public Stats stats = new Stats();
 
     private Vector2 movement;
+    
+    //we will use this to calculate the correct animation to use
+    private Vector2 previousPosition;
 
     public bool inCooldown = false;
     public bool inAttack = false;
@@ -37,6 +40,8 @@ public class Player : MonoBehaviour
     //Animation states
     const string PLAYER_IDLE = "player_idle";
     const string PLAYER_RUN = "player_run";
+    const string PLAYER_SIDEDASH = "player_sideDash";
+    const string PLAYER_PARRY = "player_parry";
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -55,6 +60,7 @@ public class Player : MonoBehaviour
         anim = gameObject.GetComponent<Animator>();
         parryCollider = GetComponent<CircleCollider2D>();
 
+        previousPosition = transform.position;
         currentState = PLAYER_IDLE;
     }
 
@@ -129,26 +135,47 @@ public class Player : MonoBehaviour
             }
         }
 
-        //where the character looks
-        if (!inAttack && !inDefence)
-        {
-            if (movement.x < 0) // Moving left
-            {
-                transform.eulerAngles = new Vector3(0, 180, 0);
-            }
-            else if (movement.x > 0) // Moving right
-            {
-                transform.eulerAngles = new Vector3(0, 0, 0);
-            }
-        }
 
         //animation control
+
+        // Update the current position
+        Vector2 currentPosition = transform.position;
+
+        // Calculate the direction of movement
+        Vector2 playerDirection = currentPosition - previousPosition;
+
+        // Check if the object is moving left or right
+        if (playerDirection.x > 0)
+        {
+            Debug.Log("Moving Right");
+            transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        else if (playerDirection.x < 0)
+        {
+            Debug.Log("Moving Left");
+            transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+
+        // Update the previous position for the next frame
+        previousPosition = currentPosition;
+
         // Check if both inputs are zero
-        if (movement.x == 0 && movement.y == 0)
+        if (movement.x == 0 && movement.y == 0 && !inAttack && !inDefence)
         {
             //we need the idle animation
             ChangeAnimationState(PLAYER_IDLE);
         } 
+        else if (inAttack)
+        {
+            //we need the attack animation
+            ChangeAnimationState(PLAYER_SIDEDASH);
+        }
+        else if (inDefence)
+        {
+            //we need the attack animation
+            ChangeAnimationState(PLAYER_PARRY);
+        }
+
         else
         {
             //we need the run animation
@@ -160,10 +187,9 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!inAttack)
+        if (!inAttack && !inDefence)
         {
-            rb.MovePosition(rb.position + movement.normalized * stats.moveSpeed * Time.fixedDeltaTime);
-            
+            rb.MovePosition(rb.position + movement.normalized * stats.moveSpeed * Time.fixedDeltaTime);   
         }
     }
 
@@ -187,7 +213,7 @@ public class Player : MonoBehaviour
     {
         parryCollider.enabled = true;
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
 
         parryCollider.enabled = false;
         inDefence = false;

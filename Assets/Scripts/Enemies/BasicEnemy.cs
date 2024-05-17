@@ -15,7 +15,9 @@ public class BasicEnemyFollowPlayer : State
 
     public override void Enter()
     {
-        enemy.spriteRenderer.color = Color.white;
+        //enemy.spriteRenderer.color = Color.white;
+        enemy.animationStateIsLocked = false;
+        enemy.ChangeAnimationState(enemy.BASICENEMY_SIDERUN);
     }
 
     public override void CalledInFixedUpdate()
@@ -49,7 +51,10 @@ public class BasicEnemyChargeBeforeDash : State
 
     public override void Enter()
     {
-        enemy.spriteRenderer.color = Color.red;
+        
+        //enemy.spriteRenderer.color = Color.red;
+        enemy.animationStateIsLocked = true;
+        enemy.ChangeAnimationState(enemy.BASICENEMY_CHARGE);
     }
 
     public override void CalledInFixedUpdate()
@@ -75,7 +80,28 @@ public class BasicEnemyDashToPlayer : State
 
     public override void Enter()
     {
-        enemy.spriteRenderer.color = Color.white;
+        //enemy.spriteRenderer.color = Color.white;
+
+        // Check if the object is moving left or right
+        if (enemy.enemyDirection.x > 0)
+        {
+            
+            
+                Debug.Log("we should turn");
+                enemy.transform.eulerAngles = new Vector3(0, 180, 0);
+            
+
+        }
+        else if (enemy.enemyDirection.x < 0)
+        {
+            
+                Debug.Log("we are ok");
+                enemy.transform.eulerAngles = new Vector3(0, 0, 0);
+            
+        }
+
+        //enemy.animationStateIsLocked = true;
+        enemy.ChangeAnimationState(enemy.BASICENEMY_SIDEDASH);
 
         enemy.isDashing = true;
 
@@ -138,6 +164,10 @@ public class BasicEnemyParryBounce : State
 
     public override void Enter()
     {
+        
+        
+        enemy.ChangeAnimationState(enemy.BASICENEMY_CHARGE);
+
         // Calculate direction towards the player
         Vector3 direction = (enemy.target.transform.position - enemy.transform.position).normalized;
 
@@ -179,9 +209,24 @@ public class BasicEnemy : Enemy
     public float bounceSpeed = 7f;
 
     public bool isDashing = false;
+    //if the animation is locked then we will not change animation, it's used for when the enemy will be standing still and we dont want to change the side he looks
+    public bool animationStateIsLocked = false;
+    public Vector2 enemyDirection;
+
+
+    //animation state
+    private string currentState;
+
+    //Animation states
+    public string BASICENEMY_IDLE = "basicEnemy_idle";
+    public string BASICENEMY_SIDERUN = "basicEnemy_sideRun";
+    public string BASICENEMY_SIDEDASH = "basicEnemy_sideDash";
+    public string BASICENEMY_CHARGE = "basicEnemy_charge";
 
     public GameObject target;
+
     public Rigidbody2D rb;
+    private Animator anim;
     public SpriteRenderer spriteRenderer;
 
     public void Awake()
@@ -189,15 +234,42 @@ public class BasicEnemy : Enemy
         target = GameObject.FindWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = gameObject.GetComponent<Animator>();
     }
 
     private void OnEnable()
     {
         fsm = new FSM(new BasicEnemyFollowPlayer(this));
+        currentState = BASICENEMY_IDLE;
+       
     }
 
     private void Update()
     {
+       //where the sprite will look
+        // Update the current position
+        Vector2 currentPosition = transform.position;
+        Vector2 playerPosition = target.transform.position;
+
+        // Calculate the direction of movement
+        enemyDirection = currentPosition - playerPosition;
+
+        // Check if the object is moving left or right
+        if (enemyDirection.x > 0)
+        {
+            if (!animationStateIsLocked)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+            
+        }
+        else if (enemyDirection.x < 0)
+        {
+            if (!animationStateIsLocked)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+        } 
         
     }
 
@@ -225,5 +297,17 @@ public class BasicEnemy : Enemy
                 }
             }
         }
+    }
+
+    public void ChangeAnimationState(string newState)
+    {
+        //stop the same animation from interrupting itself
+        if (currentState == newState) return;
+
+        //play the animation
+        anim.Play(newState);
+
+        //reassign the current state
+        currentState = newState;
     }
 }
