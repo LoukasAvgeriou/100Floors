@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1776794723462091858
 Transform:
   m_ObjectHideFlags: 0
@@ -181,6 +181,12 @@ MonoBehaviour:
   bounceDistance: 4
   bounceSpeed: 10
   isDashing: 0
+  animationStateIsLocked: 0
+  enemyDirection: {x: 0, y: 0}
+  BASICENEMY_IDLE: basicEnemy_idle
+  BASICENEMY_SIDERUN: basicEnemy_sideRun
+  BASICENEMY_SIDEDASH: basicEnemy_sideDash
+  BASICENEMY_CHARGE: basicEnemy_charge
   target: {fileID: 0}
   rb: {fileID: 0}
   spriteRenderer: {fileID: 0}

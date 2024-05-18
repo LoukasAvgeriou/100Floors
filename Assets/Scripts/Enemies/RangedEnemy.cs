@@ -15,6 +15,8 @@ public class RangedEnemyFollowPlayer : State
     public override void Enter()
     {
         //Debug.Log("state 1");
+        enemy.animationStateIsLocked = false;
+        enemy.ChangeAnimationState(enemy.RANGEDENEMY_SIDERUN);
     }
 
     public override void CalledInFixedUpdate()
@@ -47,12 +49,18 @@ public class RangedEnemyChargeBeforeShoot : State
         enemy = myEnemy;
     }
 
+    public override void Enter()
+    {
+        //enemy.spriteRenderer.color = Color.red;
+        
+        enemy.ChangeAnimationState(enemy.RANGEDENEMY_SIDECHARGE);
+    }
+
     public override void CalledInFixedUpdate()
     {
         currentTime += Time.fixedDeltaTime;
         if (currentTime > enemy.chargeDuration)
         {
-
             parentFSM.SetCurrentState(new RangedEnemyShoot(enemy));
         }
     }
@@ -71,6 +79,8 @@ public class RangedEnemyShoot : State
 
     public override void Enter()
     {
+        enemy.ChangeAnimationState(enemy.RANGEDENEMY_IDLE);
+
         //shoot
         GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("Arrow");
         if (bullet != null)
@@ -105,6 +115,7 @@ public class RangedEnemyCooldown : State
     {
         //Debug.Log("state 4");
         //enemy.spriteRenderer.sprite = enemy.number4;
+        enemy.animationStateIsLocked = true;
     }
 
     public override void CalledInFixedUpdate()
@@ -127,6 +138,20 @@ public class RangedEnemy : Enemy
 
     public GameObject target;
     public Rigidbody2D rb;
+    private Animator anim;
+
+    //if the animation is locked then we will not change animation, it's used for when the enemy will be standing still and we dont want to change the side he looks
+    public bool animationStateIsLocked = false;
+    public Vector2 enemyDirection;
+
+
+    //animation state
+    private string currentState;
+
+    //Animation states
+    public string RANGEDENEMY_IDLE = "rangedEnemy_idle";
+    public string RANGEDENEMY_SIDERUN = "rangedEnemy_sideRun";
+    public string RANGEDENEMY_SIDECHARGE = "rangedEnemy_sideCharge";
 
     //how close the enemy will go to the player
     public float followDistance = 3f;
@@ -140,11 +165,51 @@ public class RangedEnemy : Enemy
     {
         target = GameObject.FindWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
+        anim = gameObject.GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        //where the sprite will look
+        // Update the current position
+        Vector2 currentPosition = transform.position;
+        Vector2 playerPosition = target.transform.position;
+
+        // Calculate the direction of movement
+        enemyDirection = currentPosition - playerPosition;
+
+        // Check if the object is moving left or right
+        if (enemyDirection.x > 0)
+        {
+            if (!animationStateIsLocked)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+        }
+        else if (enemyDirection.x < 0)
+        {
+            if (!animationStateIsLocked)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+        }
     }
 
     public void FixedUpdate()
     {
         fsm.CalledInFixedUpdate();
+    }
+
+    public void ChangeAnimationState(string newState)
+    {
+        //stop the same animation from interrupting itself
+        if (currentState == newState) return;
+
+        //play the animation
+        anim.Play(newState);
+
+        //reassign the current state
+        currentState = newState;
     }
 }
 
