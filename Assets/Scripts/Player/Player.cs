@@ -147,12 +147,12 @@ public class Player : MonoBehaviour
         // Check if the object is moving left or right
         if (playerDirection.x > 0)
         {
-            Debug.Log("Moving Right");
+            
             transform.eulerAngles = new Vector3(0, 0, 0);
         }
         else if (playerDirection.x < 0)
         {
-            Debug.Log("Moving Left");
+            
             transform.eulerAngles = new Vector3(0, 180, 0);
         }
 

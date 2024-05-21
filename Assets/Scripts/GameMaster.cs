@@ -25,25 +25,28 @@ public class GameMaster : MonoBehaviour
     public float minEnemyRespawnTimer = 1f;
     public float maxEnemyRespawnTimer = 2f;
 
-    public bool mouseMovement = true;
+    //enemies need to kill so you finish the level
+    public int enemiesToKill = 20;
+
+    private bool levelCompleted = false;
 
     private void Update()
     {
-        if (Time.time >= nextSpawn && currentEnemies < maxEnemiesToField)
+        if (Time.time >= nextSpawn && currentEnemies < maxEnemiesToField && !levelCompleted)
         {   // It's time to spawn a new enemy and we have room to add more.
             nextSpawn = Time.time + Random.Range(minEnemyRespawnTimer, maxEnemyRespawnTimer); // Set the next spawn time to a random time between the min and max.
 
             currentEnemies++; // Add 1 to the current enemies alive.
 
             //spawn random enemy to random spawn point
-            GameObject enemy1 = ObjectPooler.SharedInstance.GetPooledObject(RandomEnemy());
-            if (enemy1 != null)
+            GameObject spawnedEnemy = ObjectPooler.SharedInstance.GetPooledObject(RandomEnemy());
+            if (spawnedEnemy != null)
             {
                 Transform enemy1Spawn = enemySpawns[Random.Range(0, enemySpawns.Length)];
 
-                enemy1.transform.position = enemy1Spawn.position;
-                enemy1.transform.rotation = enemy1Spawn.rotation;
-                enemy1.SetActive(true);
+                spawnedEnemy.transform.position = enemy1Spawn.position;
+                spawnedEnemy.transform.rotation = enemy1Spawn.rotation;
+                spawnedEnemy.SetActive(true);
             }
         }
     }
@@ -62,6 +65,20 @@ public class GameMaster : MonoBehaviour
         }
     }
 
+    public void CheckIfLevelCompleted()
+    {
+        if (enemiesToKill == 0)
+        {
+            levelCompleted = true;
+        }
+
+        if (currentEnemies == 0 && enemiesToKill == 0)
+        {
+            SceneManager.LoadScene("UpdateSelection");
+           
+        }
+    }
+
     public void KillPlayer(GameObject player)
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -73,32 +90,19 @@ public class GameMaster : MonoBehaviour
             player.SetActive(false);
             SceneManager.LoadScene("EndMenu");
         }
-
     }
 
     public void KillEnemy(GameObject enemy)
     {
         enemy.SetActive(false);
         currentEnemies--;
+        enemiesToKill--;
 
-        ScreenShakeController.instance.StartShake(.1f, .1f);
+        CheckIfLevelCompleted();
+
+        //ScreenShakeController.instance.StartShake(.1f, .1f);
     }
 
-    public void KillmainEnemy(GameObject enemy)
-    {
-        enemy.SetActive(false);
-        currentEnemies--;
-
-        ScreenShakeController.instance.StartShake(.1f, .1f);
-    }
-
-    public void BreakArrow(GameObject arrow)
-    {
-        arrow.SetActive(false);
-    }
-
-    public void KillRangedEnemy()
-    {
-
-    }
+ 
+ 
 }
