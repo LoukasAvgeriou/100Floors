@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UpgradeController : MonoBehaviour
+public class ListOfUpgradeFunctions : MonoBehaviour
 {
     public Player player;
     public UpgradesControllerSO upgradeControllerSO;
@@ -10,5 +10,10 @@ public class UpgradeController : MonoBehaviour
     public void CooldownReductionUpgrade()
     {
         player.stats.dashCooldown = upgradeControllerSO.newCooldown;
+    }
+
+    public void DashBreaksBulletsUpgrade()
+    {
+        upgradeControllerSO.breakableBullets = true;
     }
 }
