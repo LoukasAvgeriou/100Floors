@@ -197,6 +197,7 @@ MonoBehaviour:
   inDefence: 0
   endDefence: 0
   cooldownTimer: 0
+  upgradesControllerSO: {fileID: 0}
 --- !u!50 &5914512881710119796
 Rigidbody2D:
   serializedVersion: 4

@@ -61,18 +61,18 @@ public class GameMaster : MonoBehaviour
         }
         else
         {   //  chance to spawn sword enemy.
-            return "mainEnemy";
+            return "basicEnemy";
         }
     }
 
     public void CheckIfLevelCompleted()
     {
-        if (enemiesToKill == 0)
+        if (enemiesToKill <= 0)
         {
             levelCompleted = true;
         }
 
-        if (currentEnemies == 0 && enemiesToKill == 0)
+        if (currentEnemies <= 0 && enemiesToKill <= 0)
         {
             SceneManager.LoadScene("UpdateSelection");
            
@@ -84,12 +84,9 @@ public class GameMaster : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
 
         Player playerScript = player.GetComponent<Player>();
-
-        if (!playerScript.inAttack && !playerScript.inDefence)
-        {
-            player.SetActive(false);
-            SceneManager.LoadScene("EndMenu");
-        }
+        
+        player.SetActive(false);
+        SceneManager.LoadScene("EndMenu");
     }
 
     public void KillEnemy(GameObject enemy)

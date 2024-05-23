@@ -16,11 +16,11 @@ GameObject:
   - component: {fileID: 3257175178491741010}
   m_Layer: 0
   m_Name: basicEnemy
-  m_TagString: mainEnemy
+  m_TagString: basicEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1776794723462091858
 Transform:
   m_ObjectHideFlags: 0

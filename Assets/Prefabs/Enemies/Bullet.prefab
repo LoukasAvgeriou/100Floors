@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5804498636275453632}
   m_Layer: 0
   m_Name: Bullet
-  m_TagString: Arrow
+  m_TagString: bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -174,3 +174,5 @@ MonoBehaviour:
   player: {fileID: 0}
   rb: {fileID: 0}
   projectileVelocity: 5
+  upgradeControllerSO: {fileID: 11400000, guid: 2b8cd71d781a9804b940c8f5276dad35, type: 2}
+  friendlyFire: 0

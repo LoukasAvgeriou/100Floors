@@ -291,7 +291,7 @@ public class BasicEnemy : Enemy
                     playerScript.inCooldown = false;
                     fsm = new FSM(new BasicEnemyParryBounce(this));
                 }
-                else
+                else if (!playerScript.inAttack)
                 {
                     GameMaster.Instance.KillPlayer(col.gameObject);
                 }

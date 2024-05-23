@@ -59,8 +59,6 @@ public class UpgradeController : MonoBehaviour
 
             tempList.Remove(selectedButton);
 
-            
-
             selectedButton = Instantiate(selectedButton, buttonsTransforms[i].transform.position, transform.rotation);
 
             //we need to have the button be child of the canvas so it will be visible
@@ -76,14 +74,13 @@ public class UpgradeController : MonoBehaviour
 
         upgradeControllerSO.availableUpgradeButtons.RemoveAt(prefabIndex);
 
-         
-         
         Debug.Log("Guten Tag");
 
         //we increase the level we are on
         levelControllerSO.currentLevel += 1;
        
         Debug.Log("Gute Nacht");
+        
         //we load the next level
         SceneManager.LoadScene(levelControllerSO.levels[levelControllerSO.currentLevel - 1].ToString());  
     } 

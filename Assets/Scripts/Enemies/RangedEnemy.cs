@@ -82,7 +82,7 @@ public class RangedEnemyShoot : State
         enemy.ChangeAnimationState(enemy.RANGEDENEMY_IDLE);
 
         //shoot
-        GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("Arrow");
+        GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("bullet");
         if (bullet != null)
         {
             bullet.transform.position = enemy.transform.position;

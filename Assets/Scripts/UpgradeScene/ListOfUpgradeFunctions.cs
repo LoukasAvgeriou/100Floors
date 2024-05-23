@@ -16,4 +16,14 @@ public class ListOfUpgradeFunctions : MonoBehaviour
     {
         upgradeControllerSO.breakableBullets = true;
     }
+
+    public void ReturnBullets()
+    {
+        upgradeControllerSO.returnBullets = true;
+    }
+
+    public void SecondLife()
+    {
+
+    }
 }

@@ -43,6 +43,8 @@ public class Player : MonoBehaviour
     const string PLAYER_SIDEDASH = "player_sideDash";
     const string PLAYER_PARRY = "player_parry";
 
+    public UpgradesControllerSO upgradesControllerSO;
+
     private Rigidbody2D rb;
     private Animator anim;
     private CircleCollider2D parryCollider;
@@ -221,11 +223,31 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        if (inAttack)
-        {   // We are currently dashing, kill enemy.
-            gm.KillEnemy(col.gameObject);
-            inCooldown = false;
+        //we collided with a basic enemy
+        if (col.tag == "basicEnemy")
+        {
+            if (inAttack)
+            {   // We are currently dashing, kill enemy.
+                gm.KillEnemy(col.gameObject);
+                inCooldown = false;
+            }
         }
+        else if(col.tag == "rangedEnemy")
+        {
+            if (inAttack)
+            {   // We are currently dashing, kill enemy.
+                gm.KillEnemy(col.gameObject);
+                inCooldown = false;
+            }
+        } 
+        else if(col.tag == "bullet")
+        {
+            if (inAttack && upgradesControllerSO.breakableBullets)
+            {   // We are currently dashing and we have the kill bulets upgrade, so destroy the bullet
+                gm.KillEnemy(col.gameObject);
+                inCooldown = false;
+            }
+        } 
     }
 
     private void ChangeAnimationState(string newState)
