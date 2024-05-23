@@ -331,10 +331,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1920}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -592,6 +592,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   upgradeControllerSO: {fileID: 11400000, guid: 2b8cd71d781a9804b940c8f5276dad35, type: 2}
+  levelControllerSO: {fileID: 11400000, guid: 60969dd0129d01747bc4825a52a21286, type: 2}
+  player: {fileID: 4759618492176250382, guid: 5a2e7c2ccd5dba74cae8ce032fe293b1, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

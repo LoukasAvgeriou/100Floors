@@ -161,7 +161,8 @@ MonoBehaviour:
   maxEnemiesToField: 10
   minEnemyRespawnTimer: 1
   maxEnemyRespawnTimer: 2
-  enemiesToKill: 20
+  enemiesToKill: 10
+  upgradeControllerSO: {fileID: 11400000, guid: 2b8cd71d781a9804b940c8f5276dad35, type: 2}
 --- !u!4 &61695408
 Transform:
   m_ObjectHideFlags: 0

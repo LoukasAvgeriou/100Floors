@@ -24,6 +24,6 @@ public class ListOfUpgradeFunctions : MonoBehaviour
 
     public void SecondLife()
     {
-
+        upgradeControllerSO.secondLife = true;
     }
 }

@@ -44,9 +44,15 @@ public class Bullet : MonoBehaviour
 
             if (playerScript.inDefence && upgradeControllerSO.returnBullets)
             {
+                playerScript.inCooldown = false;
                 GoBack();
             }
             else if(playerScript.inDefence)
+            {
+                gameObject.SetActive(false);
+                playerScript.inCooldown = false;
+            }
+            else if (playerScript.inAttack && upgradeControllerSO.breakableBullets)
             {
                 gameObject.SetActive(false);
                 playerScript.inCooldown = false;
@@ -60,8 +66,10 @@ public class Bullet : MonoBehaviour
         {
             if (friendlyFire)
             {
+                friendlyFire = false;
                 gm.KillEnemy(col.gameObject);
                 gameObject.SetActive(false);
+
             }
         }
     }

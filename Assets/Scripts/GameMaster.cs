@@ -30,6 +30,8 @@ public class GameMaster : MonoBehaviour
 
     private bool levelCompleted = false;
 
+    public UpgradesControllerSO upgradeControllerSO;
+
     private void Update()
     {
         if (Time.time >= nextSpawn && currentEnemies < maxEnemiesToField && !levelCompleted)
@@ -84,9 +86,16 @@ public class GameMaster : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
 
         Player playerScript = player.GetComponent<Player>();
-        
-        player.SetActive(false);
-        SceneManager.LoadScene("EndMenu");
+
+        if (upgradeControllerSO.secondLife)
+        {
+            upgradeControllerSO.secondLife = false;
+        } 
+        else
+        {
+            player.SetActive(false);
+            SceneManager.LoadScene("EndMenu");
+        }
     }
 
     public void KillEnemy(GameObject enemy)
