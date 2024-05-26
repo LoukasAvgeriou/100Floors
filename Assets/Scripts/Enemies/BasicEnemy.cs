@@ -87,7 +87,7 @@ public class BasicEnemyDashToPlayer : State
         {
             
             
-                Debug.Log("we should turn");
+                //Debug.Log("we should turn");
                 enemy.transform.eulerAngles = new Vector3(0, 180, 0);
             
 

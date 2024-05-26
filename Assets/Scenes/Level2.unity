@@ -158,10 +158,10 @@ MonoBehaviour:
   - {fileID: 167505678}
   - {fileID: 2080053967}
   currentEnemies: 0
-  maxEnemiesToField: 10
-  minEnemyRespawnTimer: 1
-  maxEnemyRespawnTimer: 2
-  enemiesToKill: 10
+  maxEnemiesToField: 40
+  minEnemyRespawnTimer: 0.1
+  maxEnemyRespawnTimer: 0.5
+  enemiesToKill: 50
   upgradeControllerSO: {fileID: 11400000, guid: 2b8cd71d781a9804b940c8f5276dad35, type: 2}
 --- !u!4 &61695408
 Transform:
@@ -1038,6 +1038,10 @@ PrefabInstance:
     - target: {fileID: 8505637417628623241, guid: ce8d58e28686ea541bf996cb352f9917, type: 3}
       propertyPath: m_Name
       value: basicEnemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 8505637417628623241, guid: ce8d58e28686ea541bf996cb352f9917, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

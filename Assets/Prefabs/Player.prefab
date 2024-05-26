@@ -192,6 +192,9 @@ MonoBehaviour:
     dashDistance: 5
     dashCooldown: 3
     AttackStun: 0.2
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 1
   inCooldown: 0
   inAttack: 0
   inDefence: 0
@@ -257,18 +260,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.019531399, y: -0.1123054}
+  m_Offset: {x: -0.05435109, y: -0.09331286}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.6666667, y: 1.125}
+    oldSize: {x: 0.5, y: 0.84375}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.6484352, y: 0.8925774}
+  m_Size: {x: 0.37620854, y: 0.63934326}
   m_EdgeRadius: 0
 --- !u!58 &6464322192553106798
 CircleCollider2D:

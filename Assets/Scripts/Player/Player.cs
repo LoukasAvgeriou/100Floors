@@ -19,6 +19,9 @@ public class Player : MonoBehaviour
     public Stats stats = new Stats();
 
     private Vector2 movement;
+
+    //this is the wall layer, we use it to detect the walls
+    public LayerMask obstacleLayer;
     
     //we will use this to calculate the correct animation to use
     private Vector2 previousPosition;
@@ -106,6 +109,8 @@ public class Player : MonoBehaviour
             // Move the object by dashDistance in that direction
             Vector3 dashDestination = transform.position + direction * stats.dashDistance;
 
+            
+
             // Start dashing towards the calculated destination
             StartCoroutine(DashTowards(dashDestination));
         }
@@ -183,8 +188,6 @@ public class Player : MonoBehaviour
             //we need the run animation
             ChangeAnimationState(PLAYER_RUN);
         }
-
-
     }
 
     private void FixedUpdate()
@@ -199,6 +202,26 @@ public class Player : MonoBehaviour
     {
         Vector3 initialPosition = transform.position;
         float startTime = Time.time;
+
+        // Length of the ray
+        float rayLength = 100f;
+
+        // Calculate direction towards the mouse
+        Vector3 direction = (targetPosition - transform.position).normalized;
+
+        // Cast a ray that only detects walls
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, stats.dashDistance, obstacleLayer);
+
+        Debug.Log("Dashing time");
+
+        // If it hits something the wall
+        if (hit.collider != null)
+        {
+            Debug.Log("hit something");
+            
+            //because we will hit a wall, we change our destination, to the wall, so we dont pass through the wall
+            destination = hit.point;
+        }
 
         while (Vector3.Distance(transform.position, destination) > 0.1f)
         {
@@ -247,7 +270,9 @@ public class Player : MonoBehaviour
                 gm.KillEnemy(col.gameObject);
                 inCooldown = false;
             }
-        } 
+        }
+
+        
     }
 
     private void ChangeAnimationState(string newState)
