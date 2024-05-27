@@ -95,7 +95,6 @@ public class RangedEnemyShoot : State
         currentTime += Time.fixedDeltaTime;
         if (currentTime > enemy.chargeDuration)
         {
-
             parentFSM.SetCurrentState(new RangedEnemyFollowPlayer(enemy));
         }
     }

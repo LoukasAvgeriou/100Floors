@@ -212,8 +212,6 @@ public class Player : MonoBehaviour
         // Cast a ray that only detects walls
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, stats.dashDistance, obstacleLayer);
 
-        Debug.Log("Dashing time");
-
         // If it hits something the wall
         if (hit.collider != null)
         {
