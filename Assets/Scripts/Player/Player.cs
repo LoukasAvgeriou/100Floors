@@ -269,6 +269,7 @@ public class Player : MonoBehaviour
                 inCooldown = false;
             }
         }
+        
 
         
     }

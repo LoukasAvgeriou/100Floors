@@ -16,7 +16,7 @@ public class RangedEnemyFollowPlayer : State
     {
         //Debug.Log("state 1");
         enemy.animationStateIsLocked = false;
-        enemy.ChangeAnimationState(enemy.RANGEDENEMY_SIDERUN);
+        enemy.ChangeAnimationState(enemy.RANGEDENEMY_SIDERUN);  
     }
 
     public override void CalledInFixedUpdate()

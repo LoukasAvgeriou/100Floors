@@ -109,6 +109,15 @@ public class GameMaster : MonoBehaviour
         //ScreenShakeController.instance.StartShake(.1f, .1f);
     }
 
- 
- 
+    public void KillBoss()
+    {
+        StartCoroutine(LoadFinalScene(2));
+    }
+
+    IEnumerator LoadFinalScene(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        SceneManager.LoadScene("WinMenu");
+    }
+
 }

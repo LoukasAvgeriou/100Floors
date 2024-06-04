@@ -10,6 +10,8 @@ TagManager:
   - basicEnemy
   - bullet
   - wall
+  - coffee
+  - FirstBoss
   layers:
   - Default
   - TransparentFX

@@ -5,6 +5,7 @@ using UnityEngine;
 public class FirstBossBullet : MonoBehaviour
 {
     public GameObject player;
+    public UpgradesControllerSO upgradeControllerSO;
 
     public float speed = 1.0f; // Speed of movement
     public Vector3 controlOffset = new Vector3(0, 2, 0); // Offset for the control point
@@ -72,5 +73,44 @@ public class FirstBossBullet : MonoBehaviour
         p += tt * p2; // t^2 * P2
 
         return p;
+    }
+
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.gameObject.tag == "Player")
+        {
+            Player playerScript = player.GetComponent<Player>();
+
+            if (playerScript.inDefence && upgradeControllerSO.returnBullets)
+            {
+                playerScript.inCooldown = false;
+                //GoBack();
+                gameObject.SetActive(false);
+            }
+            else if (playerScript.inDefence)
+            {
+                gameObject.SetActive(false);
+                playerScript.inCooldown = false;
+            }
+            else if (playerScript.inAttack && upgradeControllerSO.breakableBullets)
+            {
+                gameObject.SetActive(false);
+                playerScript.inCooldown = false;
+            }
+            else
+            {
+                GameMaster.Instance.KillPlayer(col.gameObject);
+            }
+        }
+        else
+        {
+          /*  if (friendlyFire)
+            {
+                friendlyFire = false;
+                gm.KillEnemy(col.gameObject);
+                gameObject.SetActive(false);
+
+            } */
+        }
     }
 }

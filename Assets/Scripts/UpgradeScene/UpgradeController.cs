@@ -17,17 +17,13 @@ public class UpgradeController : MonoBehaviour
     //the list of our upgrades
     public  List<Button> allUpgradesList = new List<Button>();
     
-    // A working list that will be modified during runtime
-    //public List<Button> workingList = new List<Button>();
+    
 
     //the list of the transforms that we will place the upgrade buttons
     public List<Transform> buttonsTransforms = new List<Transform>();
     
     private void Start()
     {
-        //workingList = new List<Button>(upgradeControllerSO.availableUpgradeButtons);
-        //upgradeControllerSO.availableUpgradeButtons = new List<Button>(workingList);
-
         // Ensure there are enough objects to pick
         if (upgradeControllerSO.availableUpgradeButtons.Count >= numberOfUpgradesToPick)
         {
@@ -37,11 +33,6 @@ public class UpgradeController : MonoBehaviour
         {
             Debug.LogError("Not enough game objects in the list to pick from!");
         }
-
-       /* foreach (Button button in workingList)
-        {
-            button.onClick.AddListener(() => OnButtonClick(button));
-        } */ 
     }
 
     public void PickRandomUpgrades()
@@ -70,17 +61,11 @@ public class UpgradeController : MonoBehaviour
 
     void OnButtonClick(Button clickedButton, int prefabIndex)
     {
-        
-
         upgradeControllerSO.availableUpgradeButtons.RemoveAt(prefabIndex);
-
-        
 
         //we increase the level we are on
         levelControllerSO.currentLevel += 1;
-       
-       
-        
+    
         //we load the next level
         SceneManager.LoadScene(levelControllerSO.levels[levelControllerSO.currentLevel - 1].ToString());  
     } 
