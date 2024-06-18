@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa0027ec281a1674ca5f39f8a48aff0d, type: 3}
   m_Name: LevelControler
   m_EditorClassIdentifier: 
-  currentLevel: 1
+  currentLevel: 2
   levels:
   - SampleScene
   - Level2
   - Level3
   - FirstBoss
-  - WinMenu

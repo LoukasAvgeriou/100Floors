@@ -50,7 +50,7 @@ public class FirstBossHelthBar : MonoBehaviour
     public void FillTheBar()
     {
         mask.fillAmount = fBScript.health / maximum;
-        Debug.Log(fBScript.health);
+
         
     }
 }
