@@ -190,7 +190,7 @@ public class BasicEnemyParryBounce : State
 }
 
 
-public class BasicEnemy : Enemy
+public class BasicEnemy : Enemy, IHitable
 {
     private FSM fsm;
 
@@ -229,12 +229,15 @@ public class BasicEnemy : Enemy
     private Animator anim;
     public SpriteRenderer spriteRenderer;
 
+    private GameMaster gm;
+
     public void Awake()
     {
         target = GameObject.FindWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = gameObject.GetComponent<Animator>();
+        gm = GameMaster.Instance;
     }
 
     private void OnEnable()
@@ -309,5 +312,10 @@ public class BasicEnemy : Enemy
 
         //reassign the current state
         currentState = newState;
+    }
+
+    public void Hit()
+    {
+        gm.KillEnemy(gameObject);
     }
 }

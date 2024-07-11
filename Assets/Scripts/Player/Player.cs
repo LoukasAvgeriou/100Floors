@@ -242,36 +242,47 @@ public class Player : MonoBehaviour
         inDefence = false;
     }
 
-    void OnTriggerEnter2D(Collider2D col)
-    {
-        //we collided with a basic enemy
-        if (col.tag == "basicEnemy")
-        {
-            if (inAttack)
-            {   // We are currently dashing, kill enemy.
-                gm.KillEnemy(col.gameObject);
-                inCooldown = false;
-            }
-        }
-        else if(col.tag == "rangedEnemy")
-        {
-            if (inAttack)
-            {   // We are currently dashing, kill enemy.
-                gm.KillEnemy(col.gameObject);
-                inCooldown = false;
-            }
-        } 
-        else if(col.tag == "bullet")
-        {
-            if (inAttack && upgradesControllerSO.breakableBullets)
-            {   // We are currently dashing and we have the kill bulets upgrade, so destroy the bullet
-                gm.KillEnemy(col.gameObject);
-                inCooldown = false;
-            }
-        }
-        
+    /*   void OnTriggerEnter2D(Collider2D col)
+       {
+           //we collided with a basic enemy
+           if (col.tag == "basicEnemy")
+           {
+               if (inAttack)
+               {   // We are currently dashing, kill enemy.
+                   gm.KillEnemy(col.gameObject);
+                   inCooldown = false;
+               }
+           }
+           else if(col.tag == "rangedEnemy")
+           {
+               if (inAttack)
+               {   // We are currently dashing, kill enemy.
+                   gm.KillEnemy(col.gameObject);
+                   inCooldown = false;
+               }
+           } 
+           else if(col.tag == "bullet")
+           {
+               if (inAttack && upgradesControllerSO.breakableBullets)
+               {   // We are currently dashing and we have the kill bulets upgrade, so destroy the bullet
+                   gm.KillEnemy(col.gameObject);
+                   inCooldown = false;
+               }
+           }
+       } */
 
-        
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        IHitable damageable = collision.GetComponent<IHitable>();
+        if (damageable != null)
+        {
+            if (inAttack)
+            {
+                damageable.Hit();
+                inCooldown = false;
+            }
+            
+        }
     }
 
     private void ChangeAnimationState(string newState)

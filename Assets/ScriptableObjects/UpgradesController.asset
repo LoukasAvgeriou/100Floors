@@ -19,10 +19,12 @@ MonoBehaviour:
   - {fileID: 188898672087175002, guid: ec830ca67316ec7418774f30355fd351, type: 3}
   availableUpgradeButtons:
   - {fileID: 3788331723573437983, guid: 798126353bca82f4b8a1c688a9316ec8, type: 3}
+  - {fileID: 5712505288328464941, guid: a64672b72892178489dd5084bfc4e48d, type: 3}
+  - {fileID: 6556416855060090941, guid: e9e5ad42c40bc2e4fa5ec10728f5792b, type: 3}
   - {fileID: 188898672087175002, guid: ec830ca67316ec7418774f30355fd351, type: 3}
   cooldownReduction: 0
   newCooldown: 2
   startingCooldown: 3
   breakableBullets: 1
-  returnBullets: 1
+  returnBullets: 0
   secondLife: 0

@@ -127,7 +127,7 @@ public class RangedEnemyCooldown : State
     }
 }
 
-public class RangedEnemy : Enemy
+public class RangedEnemy : Enemy, IHitable
 {
     private FSM fsm; //finite state machine
 
@@ -155,6 +155,9 @@ public class RangedEnemy : Enemy
     //how close the enemy will go to the player
     public float followDistance = 3f;
 
+
+    private GameMaster gm;
+
     private void OnEnable()
     {
         fsm = new FSM(new RangedEnemyFollowPlayer(this));
@@ -165,6 +168,8 @@ public class RangedEnemy : Enemy
         target = GameObject.FindWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
         anim = gameObject.GetComponent<Animator>();
+
+        gm = GameMaster.Instance;
     }
 
     private void Update()
@@ -209,6 +214,11 @@ public class RangedEnemy : Enemy
 
         //reassign the current state
         currentState = newState;
+    }
+
+    public void Hit()
+    {
+        gm.KillEnemy(gameObject);
     }
 }
 

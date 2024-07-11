@@ -15,20 +15,35 @@ public class FirstBossShootBigBullet : State
 
     public override void Enter()
     {
-        Debug.Log("big boys state, we should not be moving");
+        Debug.Log("first state");
+
+        boss.ChangeAnimationState(boss.INTERN_THROWCOFFEE);
+
+        
 
         boss.isItTimeToRest = true;
 
-        GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("coffee");
 
-        if (bullet != null)
+        boss.animationStateIsLocked = false;
+
+    }
+
+    public override void CalledInUpdate()
+    {
+        currentTime += Time.deltaTime;
+        if (currentTime > 1.0f)
         {
-            bullet.transform.position = boss.transform.position;
-            bullet.transform.rotation = boss.transform.rotation;
-            bullet.SetActive(true);
-        }
+            GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("coffee");
 
-        parentFSM.SetCurrentState(new FirstbossShootSmallBullets(boss));
+            if (bullet != null)
+            {
+                bullet.transform.position = boss.transform.position;
+                bullet.transform.rotation = boss.transform.rotation;
+                bullet.SetActive(true);
+            }
+
+            parentFSM.SetCurrentState(new FirstbossShootSmallBullets(boss));
+        }
     }
 }
 
@@ -50,6 +65,8 @@ public class FirstbossShootSmallBullets : State
     public override void Enter()
     {
         boss.isItTimeToRest = false;
+
+        boss.ChangeAnimationState(boss.INTERN_SIDERUN);
 
         //parentFSM.SetCurrentState(new FirstBossSecondState(boss));
     }
@@ -99,6 +116,10 @@ public class FirstBossRestState : State
         boss.isItTimeToRest = true;
 
         boss.collider.enabled = true;
+
+        boss.animationStateIsLocked = true;
+
+        boss.ChangeAnimationState(boss.INTERN_MAKECOFFEE);
     }
 
     public override void CalledInUpdate()
@@ -144,6 +165,7 @@ public class FirstBoss : MonoBehaviour
 
     public Collider2D collider;
     private GameMaster gm;
+    private Animator anim;
 
     // List of transforms for waypoints
     public List<GameObject> waypoints;
@@ -151,6 +173,23 @@ public class FirstBoss : MonoBehaviour
     // Current target waypoint
     private Transform targetWaypoint;
 
+    //animation state
+    private string currentState;
+
+    //Animation states
+    public string INTERN_IDLE = "intern_idle";
+    public string INTERN_SIDERUN = "intern_sideRun";
+    public string INTERN_MAKECOFFEE = "intern_makeCoffee";
+    public string INTERN_THROWCOFFEE = "intern_throwCoffee";
+
+    //if the animation is locked then we will not change animation, it's used for when the enemy will be standing still and we dont want to change the side he looks
+    public bool animationStateIsLocked = false;
+
+    private void Awake()
+    {
+       
+        anim = gameObject.GetComponent<Animator>();
+    }
 
     void Start()
     {
@@ -159,7 +198,11 @@ public class FirstBoss : MonoBehaviour
         collider = GetComponent<Collider2D>();
         player = GameObject.FindWithTag("Player");
         gm = GameMaster.Instance;
+        
 
+        currentState = INTERN_IDLE;
+
+       // ChangeAnimationState(INTERN_SIDERUN);
 
         SetNextWaypoint();
     }
@@ -167,6 +210,31 @@ public class FirstBoss : MonoBehaviour
 
     private void Update()
     {
+        //where the sprite will look
+        // Update the current position
+        Vector2 currentPosition = transform.position;
+        Vector2 playerPosition = player.transform.position;
+
+        // Calculate the direction of movement
+       Vector2 enemyDirection = currentPosition - playerPosition;
+
+        // Check if the object is moving left or right
+        if (enemyDirection.x > 0)
+        {
+            if (!animationStateIsLocked)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+
+        }
+        else if (enemyDirection.x < 0)
+        {
+            if (!animationStateIsLocked)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+        }
+
         fsm.CalledInUpdate();
     }
 
@@ -227,6 +295,18 @@ public class FirstBoss : MonoBehaviour
                 
             }
         }
+    }
+
+    public void ChangeAnimationState(string newState)
+    {
+        //stop the same animation from interrupting itself
+        if (currentState == newState) return;
+
+        //play the animation
+        anim.Play(newState);
+
+        //reassign the current state
+        currentState = newState;
     }
 
     

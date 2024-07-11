@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : MonoBehaviour, IHitable
 {
     public GameObject player;
     public Rigidbody2D rb;
@@ -79,5 +79,15 @@ public class Bullet : MonoBehaviour
     {
         rb.velocity = -rb.velocity;
         friendlyFire = true;
+    }
+
+    public void Hit()
+    {
+        Player playerScript = player.GetComponent<Player>();
+
+        if (playerScript.inAttack && upgradeControllerSO.breakableBullets)
+        {   // We are currently dashing and we have the kill bulets upgrade, so destroy the bullet
+            gm.KillEnemy(gameObject);
+        }
     }
 }
