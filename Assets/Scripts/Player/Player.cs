@@ -236,7 +236,7 @@ public class Player : MonoBehaviour
     {
         parryCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
 
         parryCollider.enabled = false;
         inDefence = false;
