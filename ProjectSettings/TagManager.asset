@@ -12,6 +12,7 @@ TagManager:
   - wall
   - coffee
   - FirstBoss
+  - paperBullet
   layers:
   - Default
   - TransparentFX

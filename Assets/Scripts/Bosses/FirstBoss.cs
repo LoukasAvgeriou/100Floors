@@ -89,7 +89,7 @@ public class FirstbossShootSmallBullets : State
 
    public void ShootBullet()
     {
-        GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("bullet");
+        GameObject bullet = ObjectPooler.SharedInstance.GetPooledObject("paperBullet");
 
         if (bullet != null)
         {
