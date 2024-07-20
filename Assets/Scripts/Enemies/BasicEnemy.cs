@@ -208,6 +208,8 @@ public class BasicEnemy : Enemy, IHitable
     public float bounceDistance = 4f;
     public float bounceSpeed = 7f;
 
+    public float avoidanceDistance = 1f; // Distance to keep from the walls
+
     public bool isDashing = false;
     //if the animation is locked then we will not change animation, it's used for when the enemy will be standing still and we dont want to change the side he looks
     public bool animationStateIsLocked = false;
