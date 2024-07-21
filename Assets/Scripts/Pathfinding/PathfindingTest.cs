@@ -1,16 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Pathfinding : MonoBehaviour
+public class PathfindingTest : MonoBehaviour
 {
-    [SerializeField] private int gridWidth = 3;
-    [SerializeField] private int gridHeight = 3;
+    [SerializeField] private int gridWidth = 10;
+    [SerializeField] private int gridHeight = 10;
     [SerializeField] private float cellWidth = 1f;
     [SerializeField] private float cellHeight = 1f;
-
-    [SerializeField] private Vector2 gridOrigin = new Vector2(-8.5f, -4.5f); // Grid origin in the scene
 
     [SerializeField] private bool generatePath;
     [SerializeField] private bool visualiseGrid;
@@ -23,19 +20,37 @@ public class Pathfinding : MonoBehaviour
     [SerializeField] private List<Vector2> searchedCells;
     [SerializeField] private List<Vector2> finalPath;
 
-    public List<GameObject> obstacles = new List<GameObject>();
-
     private void Update()
     {
         if (generatePath && !pathGenerated)
         {
             GenerateGrid();
-            //FindPath(new Vector2(0, 1), new Vector2(5, 7));
+            FindPath(new Vector2(0, 1), new Vector2(5, 7));
             pathGenerated = true;
         }
         else if (!generatePath)
         {
             pathGenerated = false;
+        }
+    }
+
+    private void GenerateGrid()
+    {
+        cells = new Dictionary<Vector2, Cell>();
+
+        for (float x = 0; x < gridWidth; x += cellWidth)
+        {
+            for (float y = 0; y < gridHeight; y += cellHeight)
+            {
+                Vector2 pos = new Vector2(x, y);
+                cells.Add(pos, new Cell(pos));
+            }
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            Vector2 pos = new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight));
+            cells[pos].isWall = true;
         }
     }
 
@@ -71,9 +86,9 @@ public class Pathfinding : MonoBehaviour
             {
                 Cell pathCell = cells[endPos];
 
-                while (pathCell.gridPosition != startPos)
+                while (pathCell.position != startPos)
                 {
-                    finalPath.Add(pathCell.gridPosition);
+                    finalPath.Add(pathCell.position);
                     pathCell = cells[pathCell.connection];
                 }
 
@@ -138,119 +153,34 @@ public class Pathfinding : MonoBehaviour
         {
             if (!kvp.Value.isWall)
             {
-                //Gizmos.color = Color.white;
-                Color newColor = Color.white;
-                newColor.a = 0.5f;
-                Gizmos.color = newColor;
+                Gizmos.color = Color.white;
             }
             else
             {
                 Gizmos.color = Color.black;
-              /*  Color newColor = Color.black;
-                newColor.a = 0.5f;
-                Gizmos.color = newColor; */
             }
 
             if (finalPath.Contains(kvp.Key))
             {
-                //Gizmos.color = Color.magenta;
-                Color newColor = Color.magenta;
-                newColor.a = 0.5f;
-                Gizmos.color = newColor;
+                Gizmos.color = Color.magenta;
             }
 
             Gizmos.DrawCube(kvp.Key + (Vector2)transform.position, new Vector3(cellWidth, cellHeight));
         }
     }
 
-    private void GenerateGrid()
-    {
-        cells = new Dictionary<Vector2, Cell>();
-
-        for (float x = 0; x < gridWidth; x += cellWidth)
-        {
-            for (float y = 0; y < gridHeight; y += cellHeight)
-            {
-                Vector2 gridPosition = new Vector2(x, y);
-                Vector2 realWorldPosition = GetRealWorldPosition(gridPosition);
-                cells.Add(gridPosition, new Cell(gridPosition, realWorldPosition));
-               // Debug.Log($"Grid position: {gridPosition}, Real-world position: {realWorldPosition}");
-            }
-        }
-
-        /* for (int i = 0; i < 40; i++)
-         {
-             Vector2 pos = new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight));
-             cells[pos].isWall = true;
-         } */
-
-        foreach (GameObject obstacle in obstacles)
-        {
-            Vector2 obstaclePosition = new Vector2(obstacle.transform.position.x, obstacle.transform.position.y);
-
-            foreach (KeyValuePair<Vector2, Cell> entry in cells)
-            {
-                if (entry.Value.realWorldPosition == obstaclePosition)
-                {
-                    entry.Value.isWall = true;
-
-                    Debug.Log("we found a wall");
-
-                    break; // Exit the inner loop once a match is found
-                }
-            }
-        }
-    }
-
-    private Vector2 GetRealWorldPosition(Vector2 gridPosition)
-    {
-        float realX = gridOrigin.x + (gridPosition.x * cellWidth);
-        float realY = gridOrigin.y + (gridPosition.y * cellHeight);
-        return new Vector2(realX, realY);
-    }
-
-    private void MarkWalls()
-    {
-        foreach (GameObject obj in obstacles)
-        {
-            Vector2 objPosition = new Vector2(obj.transform.position.x, obj.transform.position.y);
-
-            foreach (KeyValuePair<Vector2, Cell> entry in cells)
-            {
-                if (entry.Value.realWorldPosition == objPosition)
-                {
-                    entry.Value.isWall = true;
-                    break; // Exit the inner loop once a match is found
-                }
-            }
-        }
-    }
-
     private class Cell
     {
-        public Vector2 gridPosition;
-        public Vector2 realWorldPosition;
+        public Vector2 position;
         public int fCost = int.MaxValue;
         public int gCost = int.MaxValue;
         public int hCost = int.MaxValue;
         public Vector2 connection;
         public bool isWall;
 
-      /*  public Cell(Vector2 pos)
+        public Cell(Vector2 pos)
         {
-            gridPosition = pos;
-        } */
-
-        public Cell(Vector2 gridPos, Vector2 realWorldPos)
-        {
-            gridPosition = gridPos;
-            realWorldPosition = realWorldPos;
+            position = pos;
         }
     }
 }
-
-
-
-
-
-
