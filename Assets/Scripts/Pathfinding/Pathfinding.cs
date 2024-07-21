@@ -26,6 +26,7 @@ public class Pathfinding : MonoBehaviour
         if (generatePath && !pathGenerated)
         {
             GenerateGrid();
+            FindPath(new Vector2(0, 1), new Vector2(5, 7));
             pathGenerated = true;
         }
         else if (!generatePath)
@@ -84,17 +85,51 @@ public class Pathfinding : MonoBehaviour
 
             if (cellToSearch == endPos)
             {
-                //FindPath
+                Cell pathCell = cells[endPos];
+
+                while (pathCell.position != startPos)
+                {
+                    finalPath.Add(pathCell.position);
+                    pathCell = cells[pathCell.connection];
+                }
+
+                finalPath.Add(startPos);
+
                 return;
             }
 
-
+            SearchCellNeighbors(cellToSearch, endPos);
         }
     }
 
-    private void SearchCellNeighbors()
+    private void SearchCellNeighbors(Vector2 cellPos, Vector2 endPos)
     {
+        for (float x = cellPos.x - cellWidth; x <= cellWidth + cellPos.x; x += cellWidth)
+        {
+            for (float y = cellPos.y - cellHeight; y <= cellHeight + cellPos.y; y += cellHeight)
+            {
+                Vector2 neighborPos = new Vector2(x, y);
+                if (cells.TryGetValue(neighborPos, out Cell c) && !searchedCells.Contains(neighborPos) && !cells[neighborPos].isWall)
+                {
+                    int gCostToNeighbor = cells[cellPos].gCost + GetDistance(cellPos, neighborPos);
 
+                    if (gCostToNeighbor < cells[neighborPos].gCost)
+                    {
+                        Cell neighborNode = cells[neighborPos];
+
+                        neighborNode.connection = cellPos;
+                        neighborNode.gCost = gCostToNeighbor;
+                        neighborNode.hCost = GetDistance(neighborPos, endPos);
+                        neighborNode.fCost = neighborNode.gCost + neighborNode.hCost;
+
+                        if (!cellsToSearch.Contains(neighborPos))
+                        {
+                            cellsToSearch.Add(neighborPos);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private int GetDistance(Vector2 pos1, Vector2 pos2)
@@ -124,6 +159,11 @@ public class Pathfinding : MonoBehaviour
             else
             {
                 Gizmos.color = Color.black;
+            }
+
+            if (finalPath.Contains(kvp.Key))
+            {
+                Gizmos.color = Color.magenta;
             }
 
             Gizmos.DrawCube(kvp.Key + (Vector2)transform.position, new Vector3(cellWidth, cellHeight));
