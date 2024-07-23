@@ -10,36 +10,54 @@ public class Pathfinding : MonoBehaviour
     [SerializeField] private float cellWidth = 1f;
     [SerializeField] private float cellHeight = 1f;
 
-    [SerializeField] private Vector2 gridOrigin = new Vector2(-8.5f, -4.5f); // Grid origin in the scene
+    [SerializeField] public Vector2 gridOrigin = new Vector2(-8.5f, -4.5f); // Grid origin in the scene
 
-    [SerializeField] private bool generatePath;
-    [SerializeField] private bool visualiseGrid;
+    [SerializeField] public bool generatePath;
+    [SerializeField] public bool visualiseGrid;
 
-    private bool pathGenerated;
+    public bool pathGenerated;
 
-    private Dictionary<Vector2, Cell> cells;
+    public Dictionary<Vector2, Cell> cells;
 
-    [SerializeField] private List<Vector2> cellsToSearch;
-    [SerializeField] private List<Vector2> searchedCells;
-    [SerializeField] private List<Vector2> finalPath;
+    [SerializeField] public List<Vector2> cellsToSearch;
+    [SerializeField] public List<Vector2> searchedCells;
+    [SerializeField] public List<Vector2> finalPath;
 
     public List<GameObject> obstacles = new List<GameObject>();
 
-    private void Update()
+
+    /*  private void Awake()
+      {
+          GenerateGrid();
+          FindPath(new Vector2(0, 1), new Vector2(5, 7));
+          pathGenerated = true;
+      } */
+
+
+
+    /* private void Update()
+       {
+
+           if (generatePath && !pathGenerated)
+           {
+               GenerateGrid();
+             //FindPath(new Vector2(0, 1), new Vector2(5, 7));
+            // FindPath(new Vector2(0, 1), targetGridPos);
+             pathGenerated = true;
+           }
+           else if (!generatePath)
+           {
+               pathGenerated = false;
+           }
+       }  */
+
+    private void Awake()
     {
-        if (generatePath && !pathGenerated)
-        {
-            GenerateGrid();
-            //FindPath(new Vector2(0, 1), new Vector2(5, 7));
-            pathGenerated = true;
-        }
-        else if (!generatePath)
-        {
-            pathGenerated = false;
-        }
+        GenerateGrid();
     }
 
-    private void FindPath(Vector2 startPos, Vector2 endPos)
+
+    public void FindPath(Vector2 startPos, Vector2 endPos)
     {
         searchedCells = new List<Vector2>();
         cellsToSearch = new List<Vector2> { startPos };
@@ -129,10 +147,10 @@ public class Pathfinding : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!visualiseGrid || cells == null)
-        {
-            return;
-        }
+         if (!visualiseGrid || cells == null)
+         {
+             return;
+         } 
 
         foreach (KeyValuePair<Vector2, Cell> kvp in cells)
         {
@@ -161,9 +179,12 @@ public class Pathfinding : MonoBehaviour
 
             Gizmos.DrawCube(kvp.Key + (Vector2)transform.position, new Vector3(cellWidth, cellHeight));
         }
-    }
+    } 
 
-    private void GenerateGrid()
+    
+
+
+public void GenerateGrid()
     {
         cells = new Dictionary<Vector2, Cell>();
 
@@ -178,11 +199,7 @@ public class Pathfinding : MonoBehaviour
             }
         }
 
-        /* for (int i = 0; i < 40; i++)
-         {
-             Vector2 pos = new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight));
-             cells[pos].isWall = true;
-         } */
+        
 
         foreach (GameObject obstacle in obstacles)
         {
@@ -202,11 +219,19 @@ public class Pathfinding : MonoBehaviour
         }
     }
 
-    private Vector2 GetRealWorldPosition(Vector2 gridPosition)
+    
+    public Vector2 GetRealWorldPosition(Vector2 gridPosition)
     {
         float realX = gridOrigin.x + (gridPosition.x * cellWidth);
         float realY = gridOrigin.y + (gridPosition.y * cellHeight);
         return new Vector2(realX, realY);
+    }
+
+    public Vector2 GetGridPositionFromWorldPosition(Vector2 worldPosition)
+    {
+        float gridX = (worldPosition.x - gridOrigin.x) / cellWidth;
+        float gridY = (worldPosition.y - gridOrigin.y) / cellHeight;
+        return new Vector2(Mathf.Floor(gridX), Mathf.Floor(gridY));
     }
 
     private void MarkWalls()
@@ -226,7 +251,7 @@ public class Pathfinding : MonoBehaviour
         }
     }
 
-    private class Cell
+    public class Cell
     {
         public Vector2 gridPosition;
         public Vector2 realWorldPosition;
@@ -236,10 +261,12 @@ public class Pathfinding : MonoBehaviour
         public Vector2 connection;
         public bool isWall;
 
-      /*  public Cell(Vector2 pos)
-        {
-            gridPosition = pos;
-        } */
+        public bool isTarget; // Added this line
+
+        /*  public Cell(Vector2 pos)
+          {
+              gridPosition = pos;
+          } */
 
         public Cell(Vector2 gridPos, Vector2 realWorldPos)
         {
