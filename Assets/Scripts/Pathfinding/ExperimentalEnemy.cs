@@ -5,7 +5,7 @@ using UnityEngine;
 public class ExperimentalEnemy : MonoBehaviour
 {
     public Pathfinding pathfinding; // Reference to the Pathfinding script
-    public GameObject target; // Target to move towards
+    public Transform target; // Target to move towards
     public float speed = 2f; // Speed of movement
 
     private List<Vector2> path; // The computed path
@@ -20,7 +20,7 @@ public class ExperimentalEnemy : MonoBehaviour
         }
 
         Vector2 startPos = pathfinding.GetGridPositionFromWorldPosition(transform.position);
-        Vector2 endPos = pathfinding.GetGridPositionFromWorldPosition(target.transform.position);
+        Vector2 endPos = pathfinding.GetGridPositionFromWorldPosition(target.position);
 
         // Find path and store it in the path variable
         pathfinding.FindPath(startPos, endPos);
@@ -40,9 +40,6 @@ public class ExperimentalEnemy : MonoBehaviour
             Debug.Log("No path found.");
         }
     }
-
-  
-
 
     private IEnumerator MoveAlongPath()
     {
