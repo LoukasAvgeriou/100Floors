@@ -10,7 +10,7 @@ public class Pathfinding : MonoBehaviour
     [SerializeField] private float cellWidth = 1f;
     [SerializeField] private float cellHeight = 1f;
 
-    [SerializeField] public Vector2 gridOrigin = new Vector2(-8.5f, -4.5f); // Grid origin in the scene
+    [SerializeField] public Vector2 gridOrigin = new Vector2(-8.5f, -3.5f); // Grid origin in the scene
 
     [SerializeField] public bool generatePath;
     [SerializeField] public bool visualiseGrid;
@@ -25,6 +25,8 @@ public class Pathfinding : MonoBehaviour
 
     public List<GameObject> obstacles = new List<GameObject>();
 
+    public int numberOfObstacles = 6; //how many obstacles we have in the scene
+
 
     /*  private void Awake()
       {
@@ -35,21 +37,7 @@ public class Pathfinding : MonoBehaviour
 
 
 
-    /* private void Update()
-       {
-
-           if (generatePath && !pathGenerated)
-           {
-               GenerateGrid();
-             //FindPath(new Vector2(0, 1), new Vector2(5, 7));
-            // FindPath(new Vector2(0, 1), targetGridPos);
-             pathGenerated = true;
-           }
-           else if (!generatePath)
-           {
-               pathGenerated = false;
-           }
-       }  */
+   
 
     private void Awake()
     {
@@ -59,6 +47,10 @@ public class Pathfinding : MonoBehaviour
 
     public void FindPath(Vector2 startPos, Vector2 endPos)
     {
+        ResetGrid();
+
+        
+
         searchedCells = new List<Vector2>();
         cellsToSearch = new List<Vector2> { startPos };
         finalPath = new List<Vector2>();
@@ -96,6 +88,9 @@ public class Pathfinding : MonoBehaviour
                 }
 
                 finalPath.Add(startPos);
+
+                searchedCells.Clear();
+                cellsToSearch.Clear();
 
                 return;
             }
@@ -199,24 +194,27 @@ public void GenerateGrid()
             }
         }
 
-        
-
-        foreach (GameObject obstacle in obstacles)
+        for (int i = 0; i < numberOfObstacles; i++)
         {
-            Vector2 obstaclePosition = new Vector2(obstacle.transform.position.x, obstacle.transform.position.y);
+            Vector2 pos = new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight));
 
-            foreach (KeyValuePair<Vector2, Cell> entry in cells)
+          /*  if (pos == new Vector2(0, 0))
             {
-                if (entry.Value.realWorldPosition == obstaclePosition)
-                {
-                    entry.Value.isWall = true;
+                pos = new Vector2(pos.x, pos.y + 1);
+            } */
 
-                    Debug.Log("we found a wall");
+            cells[pos].isWall = true;
 
-                    break; // Exit the inner loop once a match is found
-                }
+            GameObject obstacle = ObjectPooler.SharedInstance.GetPooledObject("Obstacle");
+            if (obstacle != null)
+            {
+                obstacle.transform.position = GetRealWorldPosition(cells[pos].gridPosition);
+                obstacle.transform.rotation = transform.rotation;
+                obstacle.SetActive(true);
             }
         }
+
+        //MarkWalls();
     }
 
     
@@ -248,6 +246,17 @@ public void GenerateGrid()
                     break; // Exit the inner loop once a match is found
                 }
             }
+        }
+    }
+
+    private void ResetGrid()
+    {
+        foreach (var cell in cells.Values)
+        {
+            cell.fCost = int.MaxValue;
+            cell.gCost = int.MaxValue;
+            cell.hCost = int.MaxValue;
+            cell.connection = Vector2.zero;
         }
     }
 

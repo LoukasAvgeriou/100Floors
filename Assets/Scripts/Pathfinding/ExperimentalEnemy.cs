@@ -5,14 +5,29 @@ using UnityEngine;
 public class ExperimentalEnemy : MonoBehaviour
 {
     public Pathfinding pathfinding; // Reference to the Pathfinding script
-    public Transform target; // Target to move towards
+    public GameObject target; // Target to move towards
     public float speed = 2f; // Speed of movement
 
     private List<Vector2> path; // The computed path
     private int currentPathIndex; // Current index in the path list
 
+    public Transform spawnPoint;
+
+    private void Awake()
+    {
+        
+        target = GameObject.FindWithTag("Player");
+    }
+
     void Start()
     {
+        FindPath();
+    }
+
+    private void FindPath()
+    {
+        
+
         if (pathfinding == null || target == null)
         {
             Debug.LogError("Pathfinding script or target not assigned.");
@@ -20,11 +35,15 @@ public class ExperimentalEnemy : MonoBehaviour
         }
 
         Vector2 startPos = pathfinding.GetGridPositionFromWorldPosition(transform.position);
-        Vector2 endPos = pathfinding.GetGridPositionFromWorldPosition(target.position);
+        Vector2 endPos = pathfinding.GetGridPositionFromWorldPosition(target.transform.position);
+
+        Debug.Log("Eimaste sthn findPath kai 8a doume ti pazei me to target. startPos = " + startPos.ToString() + " kai endPos = " + endPos.ToString());
 
         // Find path and store it in the path variable
         pathfinding.FindPath(startPos, endPos);
         path = pathfinding.finalPath;
+
+        Debug.Log("Eimaste mesa sthn FindPath," + " path.Count = " + path.Count.ToString());
 
         // Reverse the path to start from the current position
         path.Reverse();
@@ -37,6 +56,7 @@ public class ExperimentalEnemy : MonoBehaviour
         }
         else
         {
+            Debug.Log("oh, oh! path.Count = " + path.Count.ToString());
             Debug.Log("No path found.");
         }
     }
@@ -60,6 +80,39 @@ public class ExperimentalEnemy : MonoBehaviour
 
         // Path completed
         Debug.Log("Path completed.");
+
+        
+         ResetDrone();
     }
+
+   private void ResetDrone()
+    {
+
+        Debug.Log("kanoume reset!");
+        gameObject.SetActive(false);
+        LaunchDrone();
+    }
+
+    private void LaunchDrone()
+    {
+        Debug.Log("kanoume launch!");
+
+        gameObject.transform.position = spawnPoint.position;
+        gameObject.SetActive(true);
+
+        Debug.Log("finalPath.count = " + pathfinding.finalPath.Count.ToString());
+        Debug.Log("path.count = " + path.Count.ToString());
+
+        pathfinding.finalPath.Clear();
+
+        Debug.Log("finalPath.count = " + pathfinding.finalPath.Count.ToString());
+        Debug.Log("path.count = " + path.Count.ToString());
+
+        FindPath();
+
+        //Debug.Log("boom?");
+
+        
+    } 
 }
 

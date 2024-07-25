@@ -32,23 +32,28 @@ public class GameMaster : MonoBehaviour
 
     public UpgradesControllerSO upgradeControllerSO;
 
+    public bool thisIsNormalLevel = true; //i made this bool so i can turn off the enemies spawn system in levels where i dont need them
+
     private void Update()
     {
-        if (Time.time >= nextSpawn && currentEnemies < maxEnemiesToField && !levelCompleted)
-        {   // It's time to spawn a new enemy and we have room to add more.
-            nextSpawn = Time.time + Random.Range(minEnemyRespawnTimer, maxEnemyRespawnTimer); // Set the next spawn time to a random time between the min and max.
+        if (thisIsNormalLevel)
+        {
+            if (Time.time >= nextSpawn && currentEnemies < maxEnemiesToField && !levelCompleted)
+            {   // It's time to spawn a new enemy and we have room to add more.
+                nextSpawn = Time.time + Random.Range(minEnemyRespawnTimer, maxEnemyRespawnTimer); // Set the next spawn time to a random time between the min and max.
 
-            currentEnemies++; // Add 1 to the current enemies alive.
+                currentEnemies++; // Add 1 to the current enemies alive.
 
-            //spawn random enemy to random spawn point
-            GameObject spawnedEnemy = ObjectPooler.SharedInstance.GetPooledObject(RandomEnemy());
-            if (spawnedEnemy != null)
-            {
-                Transform enemy1Spawn = enemySpawns[Random.Range(0, enemySpawns.Length)];
+                //spawn random enemy to random spawn point
+                GameObject spawnedEnemy = ObjectPooler.SharedInstance.GetPooledObject(RandomEnemy());
+                if (spawnedEnemy != null)
+                {
+                    Transform enemy1Spawn = enemySpawns[Random.Range(0, enemySpawns.Length)];
 
-                spawnedEnemy.transform.position = enemy1Spawn.position;
-                spawnedEnemy.transform.rotation = enemy1Spawn.rotation;
-                spawnedEnemy.SetActive(true);
+                    spawnedEnemy.transform.position = enemy1Spawn.position;
+                    spawnedEnemy.transform.rotation = enemy1Spawn.rotation;
+                    spawnedEnemy.SetActive(true);
+                }
             }
         }
     }
@@ -77,7 +82,6 @@ public class GameMaster : MonoBehaviour
         if (currentEnemies <= 0 && enemiesToKill <= 0)
         {
             SceneManager.LoadScene("UpdateSelection");
-           
         }
     }
 

@@ -204,7 +204,7 @@ public class Player : MonoBehaviour
         float startTime = Time.time;
 
         // Length of the ray
-        float rayLength = 100f;
+        //float rayLength = 100f;
 
         // Calculate direction towards the mouse
         Vector3 direction = (targetPosition - transform.position).normalized;
