@@ -82,10 +82,10 @@ public class ExperimentalEnemy : MonoBehaviour
         Debug.Log("Path completed.");
 
         
-         ResetDrone();
+        // ResetDrone();
     }
 
-   private void ResetDrone()
+ /*  private void ResetDrone()
     {
 
         Debug.Log("kanoume reset!");
@@ -113,6 +113,6 @@ public class ExperimentalEnemy : MonoBehaviour
         //Debug.Log("boom?");
 
         
-    } 
+    }  */
 }
 
