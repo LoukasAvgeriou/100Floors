@@ -1,21 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ExperimentalEnemy : MonoBehaviour
 {
     public Pathfinding pathfinding; // Reference to the Pathfinding script
     public GameObject target; // Target to move towards
     public float speed = 2f; // Speed of movement
+    public float respawnDelay = 2f; // Delay before respawning
 
     private List<Vector2> path; // The computed path
     private int currentPathIndex; // Current index in the path list
 
-    public Transform spawnPoint;
+    public List<GameObject> spawnPoints = new List<GameObject>();
+
+    public int counter = 0;
 
     private void Awake()
     {
-        
         target = GameObject.FindWithTag("Player");
     }
 
@@ -24,10 +27,8 @@ public class ExperimentalEnemy : MonoBehaviour
         FindPath();
     }
 
-    private void FindPath()
+    public void FindPath()
     {
-        
-
         if (pathfinding == null || target == null)
         {
             Debug.LogError("Pathfinding script or target not assigned.");
@@ -37,13 +38,9 @@ public class ExperimentalEnemy : MonoBehaviour
         Vector2 startPos = pathfinding.GetGridPositionFromWorldPosition(transform.position);
         Vector2 endPos = pathfinding.GetGridPositionFromWorldPosition(target.transform.position);
 
-        Debug.Log("Eimaste sthn findPath kai 8a doume ti pazei me to target. startPos = " + startPos.ToString() + " kai endPos = " + endPos.ToString());
-
         // Find path and store it in the path variable
         pathfinding.FindPath(startPos, endPos);
         path = pathfinding.finalPath;
-
-        Debug.Log("Eimaste mesa sthn FindPath," + " path.Count = " + path.Count.ToString());
 
         // Reverse the path to start from the current position
         path.Reverse();
@@ -56,8 +53,14 @@ public class ExperimentalEnemy : MonoBehaviour
         }
         else
         {
-            Debug.Log("oh, oh! path.Count = " + path.Count.ToString());
             Debug.Log("No path found.");
+            counter++;
+
+            if (counter <= 3)
+            {
+                StartCoroutine(RespawnAfterDelay());
+            }
+
         }
     }
 
@@ -81,38 +84,40 @@ public class ExperimentalEnemy : MonoBehaviour
         // Path completed
         Debug.Log("Path completed.");
 
+        StartCoroutine(RespawnAfterDelay());
+
         
-        // ResetDrone();
+        
     }
 
- /*  private void ResetDrone()
+    private IEnumerator RespawnAfterDelay()
     {
-
-        Debug.Log("kanoume reset!");
         gameObject.SetActive(false);
+
+        yield return new WaitForSeconds(respawnDelay);
+       
         LaunchDrone();
     }
 
     private void LaunchDrone()
     {
-        Debug.Log("kanoume launch!");
+        Debug.Log("insde launch");
 
-        gameObject.transform.position = spawnPoint.position;
+        gameObject.transform.position = spawnPoints[Random.Range(0, spawnPoints.Count)].transform.position;
         gameObject.SetActive(true);
-
-        Debug.Log("finalPath.count = " + pathfinding.finalPath.Count.ToString());
-        Debug.Log("path.count = " + path.Count.ToString());
 
         pathfinding.finalPath.Clear();
 
-        Debug.Log("finalPath.count = " + pathfinding.finalPath.Count.ToString());
-        Debug.Log("path.count = " + path.Count.ToString());
-
         FindPath();
+    }
 
-        //Debug.Log("boom?");
+    private void IHateMyself()
+    {
+        Debug.Log("AAAAAAAAA");
+        LaunchDrone();
+    }
+    
 
-        
-    }  */
 }
+
 
