@@ -15,7 +15,7 @@ public class ExperimentalEnemy : MonoBehaviour
 
     public List<GameObject> spawnPoints = new List<GameObject>();
 
-    public int counter = 0;
+    public GameObject explosion;
 
     private void Awake()
     {
@@ -24,6 +24,8 @@ public class ExperimentalEnemy : MonoBehaviour
 
     void Start()
     {
+        
+
         FindPath();
     }
 
@@ -54,12 +56,8 @@ public class ExperimentalEnemy : MonoBehaviour
         else
         {
             Debug.Log("No path found.");
-            counter++;
 
-            if (counter <= 3)
-            {
-                StartCoroutine(RespawnAfterDelay());
-            }
+            gameObject.SetActive(false);
 
         }
     }
@@ -84,38 +82,14 @@ public class ExperimentalEnemy : MonoBehaviour
         // Path completed
         Debug.Log("Path completed.");
 
-        StartCoroutine(RespawnAfterDelay());
 
-        
-        
-    }
-
-    private IEnumerator RespawnAfterDelay()
-    {
+        explosion.SetActive(true);
         gameObject.SetActive(false);
-
-        yield return new WaitForSeconds(respawnDelay);
        
-        LaunchDrone();
+
     }
 
-    private void LaunchDrone()
-    {
-        Debug.Log("insde launch");
-
-        gameObject.transform.position = spawnPoints[Random.Range(0, spawnPoints.Count)].transform.position;
-        gameObject.SetActive(true);
-
-        pathfinding.finalPath.Clear();
-
-        FindPath();
-    }
-
-    private void IHateMyself()
-    {
-        Debug.Log("AAAAAAAAA");
-        LaunchDrone();
-    }
+    
     
 
 }

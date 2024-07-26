@@ -270,12 +270,7 @@ public void GenerateGrid()
         public Vector2 connection;
         public bool isWall;
 
-        public bool isTarget; // Added this line
-
-        /*  public Cell(Vector2 pos)
-          {
-              gridPosition = pos;
-          } */
+        public bool isTarget; 
 
         public Cell(Vector2 gridPos, Vector2 realWorldPos)
         {
