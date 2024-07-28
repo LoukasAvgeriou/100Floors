@@ -24,8 +24,6 @@ public class ExperimentalEnemy : MonoBehaviour
 
     void Start()
     {
-        
-
         FindPath();
     }
 
@@ -58,7 +56,6 @@ public class ExperimentalEnemy : MonoBehaviour
             Debug.Log("No path found.");
 
             gameObject.SetActive(false);
-
         }
     }
 
@@ -82,16 +79,9 @@ public class ExperimentalEnemy : MonoBehaviour
         // Path completed
         Debug.Log("Path completed.");
 
-
         explosion.SetActive(true);
         gameObject.SetActive(false);
-       
-
     }
-
-    
-    
-
 }
 
 

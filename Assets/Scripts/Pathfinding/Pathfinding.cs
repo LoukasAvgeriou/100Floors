@@ -28,13 +28,7 @@ public class Pathfinding : MonoBehaviour
     public int numberOfObstacles = 6; //how many obstacles we have in the scene
 
 
-    /*  private void Awake()
-      {
-          GenerateGrid();
-          FindPath(new Vector2(0, 1), new Vector2(5, 7));
-          pathGenerated = true;
-      } */
-
+  
 
 
    
@@ -48,9 +42,6 @@ public class Pathfinding : MonoBehaviour
     public void FindPath(Vector2 startPos, Vector2 endPos)
     {
         ResetGrid();
-
-        
-
         searchedCells = new List<Vector2>();
         cellsToSearch = new List<Vector2> { startPos };
         finalPath = new List<Vector2>();
@@ -151,7 +142,6 @@ public class Pathfinding : MonoBehaviour
         {
             if (!kvp.Value.isWall)
             {
-                //Gizmos.color = Color.white;
                 Color newColor = Color.white;
                 newColor.a = 0.5f;
                 Gizmos.color = newColor;
@@ -159,14 +149,10 @@ public class Pathfinding : MonoBehaviour
             else
             {
                 Gizmos.color = Color.black;
-              /*  Color newColor = Color.black;
-                newColor.a = 0.5f;
-                Gizmos.color = newColor; */
             }
 
             if (finalPath.Contains(kvp.Key))
             {
-                //Gizmos.color = Color.magenta;
                 Color newColor = Color.magenta;
                 newColor.a = 0.5f;
                 Gizmos.color = newColor;
@@ -190,18 +176,12 @@ public void GenerateGrid()
                 Vector2 gridPosition = new Vector2(x, y);
                 Vector2 realWorldPosition = GetRealWorldPosition(gridPosition);
                 cells.Add(gridPosition, new Cell(gridPosition, realWorldPosition));
-               // Debug.Log($"Grid position: {gridPosition}, Real-world position: {realWorldPosition}");
             }
         }
 
         for (int i = 0; i < numberOfObstacles; i++)
         {
             Vector2 pos = new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight));
-
-          /*  if (pos == new Vector2(0, 0))
-            {
-                pos = new Vector2(pos.x, pos.y + 1);
-            } */
 
             cells[pos].isWall = true;
 
@@ -214,7 +194,7 @@ public void GenerateGrid()
             }
         }
 
-        //MarkWalls();
+       
     }
 
     
@@ -230,24 +210,7 @@ public void GenerateGrid()
         float gridX = (worldPosition.x - gridOrigin.x) / cellWidth;
         float gridY = (worldPosition.y - gridOrigin.y) / cellHeight;
         return new Vector2(Mathf.Floor(gridX), Mathf.Floor(gridY));
-    }
-
-    private void MarkWalls()
-    {
-        foreach (GameObject obj in obstacles)
-        {
-            Vector2 objPosition = new Vector2(obj.transform.position.x, obj.transform.position.y);
-
-            foreach (KeyValuePair<Vector2, Cell> entry in cells)
-            {
-                if (entry.Value.realWorldPosition == objPosition)
-                {
-                    entry.Value.isWall = true;
-                    break; // Exit the inner loop once a match is found
-                }
-            }
-        }
-    }
+    } 
 
     private void ResetGrid()
     {
