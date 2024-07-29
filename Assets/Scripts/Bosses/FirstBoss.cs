@@ -242,7 +242,6 @@ public class FirstBoss : MonoBehaviour
     {
         if (!isItTimeToRest)
         {
-            //Debug.Log("we are in the fixedUpdate and the timeToRest = " + timeToRest.ToString());
             // Move towards the target waypoint
             MoveTowardsWaypoint();
         }
