@@ -19,13 +19,8 @@ public class FirstBossShootBigBullet : State
 
         boss.ChangeAnimationState(boss.INTERN_THROWCOFFEE);
 
-        
-
         boss.isItTimeToRest = true;
-
-
         boss.animationStateIsLocked = false;
-
     }
 
     public override void CalledInUpdate()
@@ -249,8 +244,6 @@ public class FirstBoss : MonoBehaviour
 
     void MoveTowardsWaypoint()
     {
-        
-
         if (targetWaypoint != null)
         {
             // Calculate the step size
