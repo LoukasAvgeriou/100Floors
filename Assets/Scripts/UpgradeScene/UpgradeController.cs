@@ -61,14 +61,10 @@ public class UpgradeController : MonoBehaviour
             //we need to have the button be child of the canvas so it will be visible
             selectedButton.transform.parent = canvas.transform;
 
-            selectedButton.onClick.AddListener(() => OnButtonClick(selectedButton, randomIndexes[tempIDX]));
-
-            
+            selectedButton.onClick.AddListener(() => OnButtonClick(selectedButton, randomIndexes[tempIDX]));   
             
         }
     }
-
-    
 
     void OnButtonClick(Button clickedButton, int prefabIndex)
     {
@@ -82,7 +78,6 @@ public class UpgradeController : MonoBehaviour
         //we load the next level
         SceneManager.LoadScene(levelControllerSO.levels[levelControllerSO.currentLevel - 1].ToString());  
     }
-
 
     private void PickTwoDifferentRandomNumbers()
     {
@@ -104,8 +99,6 @@ public class UpgradeController : MonoBehaviour
             int temp = numbers[i];
             numbers[i] = numbers[randomIndex];
             numbers[randomIndex] = temp;
-
-            
         }
 
         for (int i = 0; i < upgradeControllerSO.availableUpgradeButtons.Count; i++)
