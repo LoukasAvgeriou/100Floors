@@ -28,11 +28,8 @@ public class Bullet : MonoBehaviour, IHitable
         difference.Normalize();
         float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
 
-        //GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.Euler(0f, 0f, rotZ + 90)) as GameObject;
-
         gameObject.transform.rotation = Quaternion.Euler(0f, 0f, rotZ + 90);
 
-        //Rigidbody2D projectileRB = gameObject.GetComponent<Rigidbody2D>();
         rb.velocity = gameObject.transform.up * projectileVelocity;
     }
 
